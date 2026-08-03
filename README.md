@@ -6,11 +6,13 @@
 
 Marcocenter is currently in the planning and project-setup stage. Application features listed under **Planned or Incomplete Features** have not yet been completed. This README will be updated throughout development so that the documented status matches the working application.
 
+The Next.js frontend and Express backend have been initialized. Prisma is configured to connect to Supabase PostgreSQL, while customer authentication will be provided by Supabase Auth. Authentication has been selected architecturally but has not yet been implemented in the application.
+
 ## Team Members
 
-| Team Member | Role | Primary Contributions |
-| --- | --- | --- |
-| `Yuefeng Xiao` | Full-Stack Developer | Project planning, UI/UX, frontend development, REST API development, database design, authentication and authorization, payment integration, testing, deployment, and documentation |
+| Team Member | Primary Contributions |
+| --- | --- |
+| `Yuefeng Xiao` | Project planning, UI/UX, frontend development, REST API development, database design, authentication and authorization, payment integration, testing, deployment, and documentation |
 
 This project is currently planned as an individual project. The development process will still use GitHub Issues, a GitHub Project board, feature branches, pull requests, code reviews, and meaningful commits.
 
@@ -37,6 +39,10 @@ The following project-planning work is complete:
 - Initial application architecture documented
 - Initial feature scope documented
 - GitHub-based development workflow defined
+- Next.js frontend application initialized
+- Express backend application initialized
+- Prisma ORM configured with Supabase PostgreSQL
+- Supabase Auth selected as the authentication provider
 
 ### Planned or Incomplete Features
 
@@ -47,7 +53,7 @@ The following project-planning work is complete:
 - Search by product name, brand, or keyword
 - Filter by category, brand, price, availability, and hardware specifications
 - Product detail pages with images, specifications, price, and stock status
-- User registration, login, logout, and protected account pages
+- Supabase Auth registration, login, logout, password recovery, and protected account pages
 - Persistent shopping cart
 - Server-side price and inventory validation
 - Stripe test-mode checkout
@@ -87,11 +93,11 @@ The following project-planning work is complete:
 | Frontend | React, Next.js, TypeScript, Tailwind CSS |
 | Backend | Node.js, Express.js, REST API |
 | Database | PostgreSQL, Prisma ORM |
-| Authentication | JSON Web Tokens (JWT), bcrypt, secure HTTP-only cookies |
+| Authentication | Supabase Auth, Supabase-issued JWT access tokens, Express authentication middleware |
 | Payments | Stripe Test Mode and Stripe webhooks |
 | Frontend deployment | Vercel |
 | Backend deployment | Render |
-| Hosted database and image storage | Supabase PostgreSQL |
+| Hosted services | Supabase PostgreSQL, Supabase Auth, Supabase Storage |
 | Backend testing | Vitest and Supertest |
 | Frontend/end-to-end testing | Vitest, Playwright |
 | Validation and utilities | Zod, CORS, Stripe SDK |
@@ -101,25 +107,42 @@ The following project-planning work is complete:
 
 ```mermaid
 flowchart TD
-    A[Next.js Frontend] -->|HTTPS requests| B[Express REST API]
-    B -->|Prisma queries| C[(PostgreSQL Database)]
-    B -->|Payment requests and webhooks| D[Stripe Test Mode]
-    B -->|Product images| E[Supabase Storage]
+    A[Next.js Frontend] -->|Sign up, sign in, and sign out| B[Supabase Auth]
+    B -->|Session and access token| A
+    A -->|REST requests with Bearer token| C[Express REST API]
+    C -->|Verify token| B
+    C -->|Prisma queries| D[Prisma ORM]
+    D --> E[(Supabase PostgreSQL)]
+    C -->|Payment requests and webhooks| F[Stripe Test Mode]
+    C -->|Product images| G[Supabase Storage]
 ```
 
-The Next.js application is responsible for the user interface, navigation, client-side state, user input, loading states, and displaying API responses.
+The Next.js application is responsible for the user interface, navigation, client-side state, user input, loading states, displaying API responses, and maintaining the Supabase Auth session.
 
-The separate Express application exposes REST API routes. It validates incoming data, applies business rules, authenticates users, authorizes administrator actions, calculates trusted prices, checks inventory, communicates with Stripe, and reads from or writes to PostgreSQL through Prisma.
+Supabase Auth is responsible for account creation, password handling, login, logout, session management, password recovery, and issuing access-token JWTs. The application does not store or hash user passwords itself.
 
-The frontend does **not** directly access the database. Core application data follows this path:
+The separate Express application exposes REST API routes. It validates incoming data, verifies Supabase access tokens, applies business rules, authorizes administrator actions, calculates trusted prices, checks inventory, communicates with Stripe, and reads from or writes to PostgreSQL through Prisma.
+
+The frontend communicates directly with Supabase only for authentication. It does **not** directly access core business tables. Product, cart, inventory, order, review, wishlist, and analytics data follow this path:
 
 ```text
 Next.js frontend
-        ↓ HTTPS requests and JSON responses
+        ↓ HTTPS requests, JSON responses, and optional Bearer token
 Express REST API
         ↓ Prisma ORM
-PostgreSQL database
+Supabase PostgreSQL
 ```
+
+### Authentication and Authorization Flow
+
+1. A user signs up or signs in through Supabase Auth.
+2. Supabase returns a session containing an access token.
+3. Next.js sends the access token to protected Express routes using `Authorization: Bearer <access-token>`.
+4. Express authentication middleware verifies the token and attaches the verified user identity to the request.
+5. Express applies resource ownership and role-based authorization rules before executing business operations.
+6. Prisma reads or modifies the corresponding application data in the PostgreSQL `public` schema.
+
+Supabase Auth answers **who the user is**. Express remains responsible for **what the user is allowed to do**. Administrator privileges, resource ownership, inventory changes, and order access are enforced by the Express API rather than trusted from frontend state.
 
 ## Planned Repository Structure
 
@@ -151,25 +174,23 @@ Marcocenter/
 
 Development work is tracked in a GitHub Project rather than only in personal notes.
 
-- **GitHub Project:** `[Add GitHub Project URL]`
-- **Repository:** `[Add GitHub repository URL]`
-- **Workflow:** Backlog → Ready → In Progress → In Review → Done
+- **GitHub Project:** https://github.com/users/qiwuyue/projects/1
+- **Repository:** https://github.com/qiwuyue/CISC3140_E-Commerce/
+- **Workflow:** Backlog → Todo → In Progress → Done
 
 ### GitHub Project Fields
 
 | Field | Example Values | Purpose |
 | --- | --- | --- |
-| Status | Backlog, Ready, In Progress, In Review, Done | Tracks the current stage of work |
-| Priority | P0, P1, P2 | Identifies critical, important, and optional work |
-| Size | S, M, L | Estimates task complexity |
-| Area | Frontend, Backend, Database, Testing, Documentation, DevOps | Groups work by technical area |
-| Iteration | Week 1, Week 2, Week 3, etc. | Tracks weekly progress |
+| Status | Backlog, Todo, In Progress, Done | Tracks the current stage of work |
+| Priority | Low, Medium, High | Identifies critical, important, and optional work |
+
 
 ### Issue Workflow
 
 1. Create a GitHub Issue for each feature, bug, test, or documentation task.
 2. Add acceptance criteria and assign the appropriate priority, size, area, and iteration.
-3. Add the Issue to the GitHub Project and move it to **Ready** before development.
+3. Add the Issue to the GitHub Project and move it to **Todo** before development.
 4. Create a branch from the latest `main` branch and move the Issue to **In Progress**.
 5. Make focused, meaningful commits that reference the Issue when appropriate.
 6. Open a pull request and link it with `Closes #<issue-number>`.
@@ -180,8 +201,7 @@ Development work is tracked in a GitHub Project rather than only in personal not
 ### Branch Naming
 
 ```text
-setup/frontend
-setup/backend
+setup/project-env
 feature/product-catalog
 feature/authentication
 feature/shopping-cart
@@ -200,6 +220,7 @@ feat(products): add product list endpoint
 feat(cart): persist cart items for authenticated users
 test(auth): add login integration tests
 fix(inventory): prevent checkout when stock is insufficient
+chore: configure enviroment or files
 ```
 
 ### Definition of Done
@@ -289,7 +310,7 @@ After each slice is completed, this section will be updated with the exact migra
 - Node.js 20 or later
 - npm
 - Git
-- A PostgreSQL database or Supabase PostgreSQL project
+- A Supabase project with PostgreSQL and Auth enabled
 - A Stripe test account for checkout development
 
 ### 1. Clone the Repository
@@ -322,9 +343,9 @@ cp backend/.env.example backend/.env
 
 Enter local development values for the variables listed in the **Environment Variables** section. Never commit real secret values.
 
-### 5. Connect to PostgreSQL and Prepare the Database
+### 5. Connect to Supabase and Prepare the Database
 
-Set `DATABASE_URL` in `backend/.env`, then run:
+Set both database connection variables in `backend/.env`. `DATABASE_URL` is used by the running Express application, while `DIRECT_URL` uses the Supabase Session pooler on port `5432` for Prisma CLI and migration commands. Configure `prisma.config.ts` to read `DIRECT_URL`, then run:
 
 ```bash
 (cd backend && npx prisma migrate dev && npx prisma db seed)
@@ -377,6 +398,8 @@ Only variable names and example placeholders belong in Git. Real credentials mus
 | Variable | Purpose |
 | --- | --- |
 | `NEXT_PUBLIC_API_URL` | Base URL of the Express REST API |
+| `NEXT_PUBLIC_SUPABASE_URL` | Public Supabase project URL used by the authentication client |
+| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Public key used by the frontend Supabase Auth client |
 | `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | Stripe test-mode publishable key |
 
 ### Backend: `backend/.env`
@@ -385,14 +408,14 @@ Only variable names and example placeholders belong in Git. Real credentials mus
 | --- | --- |
 | `NODE_ENV` | Current runtime environment |
 | `PORT` | Express server port |
-| `DATABASE_URL` | PostgreSQL connection string used by Prisma |
+| `DATABASE_URL` | PostgreSQL runtime connection used by Express and Prisma Client; use the transaction pooler on port `6543` for serverless or auto-scaling deployments |
+| `DIRECT_URL` | Supabase Session pooler connection on port `5432`, used by Prisma CLI and migrations through `prisma.config.ts` |
 | `FRONTEND_URL` | Allowed frontend origin for CORS |
-| `JWT_SECRET` | Secret used to sign authentication tokens |
-| `JWT_EXPIRES_IN` | Authentication-token lifetime |
 | `STRIPE_SECRET_KEY` | Stripe test-mode server key |
 | `STRIPE_WEBHOOK_SECRET` | Secret used to verify Stripe webhook signatures |
-| `SUPABASE_URL` | Supabase project URL for product-image storage |
-| `SUPABASE_SERVICE_ROLE_KEY` | Server-only key used for authorized storage operations |
+| `SUPABASE_URL` | Supabase project URL used for authentication verification and product-image storage |
+| `SUPABASE_PUBLISHABLE_KEY` | Supabase publishable key used for server-side authentication verification where required |
+| `SUPABASE_SECRET_KEY` | Optional server-only key for privileged Supabase operations; never expose it to the frontend |
 
 ## API Documentation
 
@@ -400,12 +423,18 @@ The routes below are planned. Implemented request bodies, response bodies, autho
 
 ### Authentication
 
+Registration, login, logout, password recovery, and session refresh are handled by the frontend through Supabase Auth rather than custom Express password endpoints. Supabase passwords are not sent to or stored by the Express application.
+
+Protected Express routes accept a Supabase access token in the following header:
+
+```http
+Authorization: Bearer <access-token>
+```
+
 | Method | Route | Access | Description |
 | --- | --- | --- | --- |
-| `POST` | `/api/auth/register` | Public | Creates a customer account |
-| `POST` | `/api/auth/login` | Public | Authenticates a user and starts a session |
-| `POST` | `/api/auth/logout` | Authenticated | Ends the current session |
-| `GET` | `/api/auth/me` | Authenticated | Returns the current user's profile |
+| `GET` | `/api/profile` | Authenticated | Returns the application profile associated with the verified Supabase user |
+| `PATCH` | `/api/profile` | Authenticated | Updates allowed fields on the current user's application profile |
 
 ### Products and Categories
 
@@ -463,7 +492,8 @@ The planned relational database uses PostgreSQL. Important monetary values will 
 
 | Table | Purpose and Important Relationships |
 | --- | --- |
-| `users` | Stores account identity, hashed password, and customer/admin role; has one cart and many orders, reviews, and wishlist items |
+| Supabase `auth.users` | Managed exclusively by Supabase Auth; stores authentication identity and credentials and is not modified through Prisma |
+| `profiles` | Stores application profile data and customer/admin role; uses the Supabase Auth user UUID as its identity and has one cart and many orders, reviews, and wishlist items |
 | `categories` | Organizes products; one category has many products |
 | `brands` | Stores product manufacturers; one brand has many products |
 | `products` | Stores product name, description, price, status, stock, and category/brand references |
@@ -474,15 +504,17 @@ The planned relational database uses PostgreSQL. Important monetary values will 
 | `orders` | Stores order owner, totals, payment status, fulfillment status, and Stripe references |
 | `order_items` | Stores immutable snapshots of product name, unit price, and quantity at purchase time |
 | `reviews` | Connects verified customers and products with a rating and comment |
-| `wishlist_items` | Connects users and saved products |
-| `inventory_logs` | Records stock changes, reasons, timestamps, and responsible users |
+| `wishlist_items` | Connects profiles and saved products |
+| `inventory_logs` | Records stock changes, reasons, timestamps, and the responsible administrator profile |
 | `admin_logs` | Records important administrator actions for accountability |
 
 Key relationship rules:
 
 - A product belongs to one category and one brand.
-- A user owns one active cart, and a cart contains many cart items.
-- A user can place many orders, and an order contains many order items.
+- A Supabase Auth user is represented in the application by a corresponding `profiles` record in the PostgreSQL `public` schema.
+- Passwords and authentication credentials remain managed by Supabase Auth and are never stored in Prisma-managed tables.
+- A profile owns one active cart, and a cart contains many cart items.
+- A profile can place many orders, and an order contains many order items.
 - `order_items` preserve the product name and price at checkout so historical orders do not change when a product is renamed or repriced.
 - Inventory changes are performed and recorded by the backend rather than trusted from frontend values.
 
@@ -506,9 +538,9 @@ Planned screenshots:
 ## Known Issues and Current Limitations
 
 - The repository is currently in the planning and setup stage.
-- The frontend and backend applications have not been initialized.
-- No database migration or seed data has been created.
-- Authentication and authorization have not been implemented.
+- The frontend and backend applications have been initialized, but customer-facing pages and REST API features remain incomplete.
+- Prisma is configured to connect to Supabase PostgreSQL, but no application database migration or seed data has been created.
+- Supabase Auth has been selected, but authentication UI, session handling, Express token verification, profiles, and authorization rules have not been implemented.
 - Checkout and Stripe webhooks have not been implemented.
 - Administrator features, automated tests, screenshots, and deployments are not yet available.
 - The final process for obtaining an independent code review must be confirmed with the instructor because the project is currently planned as an individual project.
@@ -516,7 +548,3 @@ Planned screenshots:
 ## Academic and AI-Assisted Development Transparency
 
 AI tools may be used to support planning, debugging, test generation, documentation, and code review when permitted by course policy. All generated code must be reviewed, understood, tested, and explained by the developer. The developer remains responsible for technical decisions, correctness, security, and the final implementation.
-
-## License
-
-This project is being developed for an academic course. No open-source license has been selected at this stage.
