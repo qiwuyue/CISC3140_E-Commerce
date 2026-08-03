@@ -8,6 +8,50 @@ generator client {
 }
 
 datasource db {
-  provider  = "postgresql"
+  provider = "postgresql"
+}
 
+model Category {
+  id        String    @id @default(uuid()) @db.Uuid
+  name      String    @unique
+  slug      String    @unique
+  products  Product[]
+  CreateAt  DateTime  @default(now()) @map("created_at")
+  UpdatedAt DateTime  @updatedAt @map("updated_at")
+
+  @@map("categories")
+}
+
+model Brand {
+  id        String    @id @default(uuid()) @db.Uuid
+  name      String    @unique
+  slug      String    @unique
+  products  Product[]
+  CreateAt  DateTime  @default(now()) @map("created_at")
+  UpdatedAt DateTime  @updatedAt @map("updated_at")
+
+  @@map("brands")
+}
+
+model Product {
+  id          String   @id @default(uuid()) @db.Uuid
+  name        String
+  sku         String   @unique
+  slug        String   @unique
+  description String
+  price       Decimal  @db.Decimal(10, 2)
+  quantity    Int      @default(0) @map("stock_quantity")
+  imageUrl    String?  @map("image_url")
+  isActive    Boolean  @default(true) @map("is_active")
+  categoryId  String   @map("category_id") @db.Uuid
+  category    Category @relation(fields: [categoryId], references: [id])
+  brand       Brand    @relation(fields: [brandId], references: [id])
+  brandId     String   @map("brand_id") @db.Uuid
+  CreateAt    DateTime @default(now()) @map("created_at")
+  UpdatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@index([categoryId])
+  @@index([brandId])
+  @@index([isActive])
+  @@map("products")
 }
