@@ -187,7 +187,7 @@ async function main() {
           connect: { id: brandId },
         },
       },
-    })
+    });
   }
 
   console.log(`Seeded ${products.length} products.`);
