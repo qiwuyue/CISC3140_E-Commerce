@@ -29,9 +29,9 @@ const categories = [
   "Memory",
   "Storage",
   "Motherboards",
-  "Power Suppliy",
+  "Power Supplies",
   "Cooling",
-  "Case",
+  "Cases",
 ];
 
 export default function Header() {

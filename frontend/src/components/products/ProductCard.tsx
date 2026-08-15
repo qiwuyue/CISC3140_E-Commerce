@@ -1,5 +1,5 @@
 import type {Product} from "@/lib/product";
-
+import Link from "next/link";
 type ProductCardProps = {
     product: Product;
 };
@@ -8,7 +8,14 @@ export default function ProductCard({
   product,
 }: ProductCardProps) {
   return (
+    <Link
+      href={`/products/${product.slug}`}
+      aria-label={`View ${product.name}`}
+      className="group block h-full rounded-xl focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-blue-100"
+    >
+
     <article className="flex h-full flex-col rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-md">
+      
       <div className="mb-3 flex items-center justify-between gap-3">
         <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-blue-700">
           {product.category.name}
@@ -37,5 +44,6 @@ export default function ProductCard({
         </p>
       </div>
     </article>
+    </Link>
   );
 }
