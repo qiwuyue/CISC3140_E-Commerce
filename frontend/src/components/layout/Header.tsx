@@ -1,6 +1,7 @@
 "use client";
 import type { SubmitEvent } from "react";
 import Link from "next/link";
+import type { ReactNode } from "react";
 import {
   Search,
   ShoppingCart,
@@ -9,6 +10,11 @@ import {
 
 
 } from "lucide-react";
+
+type HeaderProps = {
+  authControls: ReactNode;
+};
+
 function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
   const formData = new FormData(event.currentTarget);
   const query = String(formData.get("q") ?? "").trim();
@@ -34,7 +40,8 @@ const categories = [
   "Cases",
 ];
 
-export default function Header() {
+export default function Header({
+  authControls,}:HeaderProps) {
   return (
     <header className="sticky top-0 z-50 border-b border-slate-200 bg-white/95 backdrop-blur">
 
@@ -90,17 +97,7 @@ export default function Header() {
           aria-label="Account and cart"
           className="ml-auto flex shrink-0 items-center gap-5"
         >
-          <Link
-            href="/login"
-            className="flex items-center gap-2 text-sm font-medium text-slate-600 transition hover:text-blue-600"
-          >
-            <UserRound
-              aria-hidden="true"
-              className="size-5"
-            />
-
-            <span>Login</span>
-          </Link>
+          {authControls}
 
           <Link
             href="/cart"
