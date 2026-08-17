@@ -1,0 +1,21 @@
+import { Router } from "express";
+import { requireAuth } from "../middleware/requireAuth.js";
+import {
+  getCart,
+  addCartItem,
+  updateCartItem,
+  deleteCartItem
+} from "../controllers/cartController.js";
+import { it } from "node:test";
+
+const router = Router();
+
+router.get("/", requireAuth, getCart);
+
+router.post("/items", requireAuth, addCartItem);
+
+router.patch("/items/:id", requireAuth,updateCartItem);
+
+router.delete("/items/:id",requireAuth, deleteCartItem);
+
+export default router;

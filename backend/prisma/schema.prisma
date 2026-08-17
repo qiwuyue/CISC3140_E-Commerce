@@ -48,6 +48,7 @@ model Product {
   category    Category @relation(fields: [categoryId], references: [id])
   brand       Brand    @relation(fields: [brandId], references: [id])
   brandId     String   @map("brand_id") @db.Uuid
+  cartItems CartItem[]
   CreateAt    DateTime @default(now()) @map("created_at")
   UpdatedAt   DateTime @updatedAt @map("updated_at")
 
@@ -55,4 +56,30 @@ model Product {
   @@index([brandId])
   @@index([isActive])
   @@map("products")
+}
+model Cart {
+  id        String     @id @default(cuid())
+  userId String  @unique @map("user_id") @db.Uuid
+  user   Profile @relation(
+    fields: [userId],
+    references: [id],
+    onDelete: Cascade
+  )
+  items     CartItem[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+model CartItem {
+  id        String   @id @default(cuid())
+  quantity  Int      @default(1)
+
+  cartId    String
+  productId String   @map("product_id") @db.Uuid
+  
+
+  cart      Cart     @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  product   Product  @relation(fields: [productId], references: [id])
+
+  @@unique([cartId, productId])
 }
