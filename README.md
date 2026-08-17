@@ -319,14 +319,18 @@ After each slice is completed, this section will be updated with the exact migra
 git clone <repository-url>
 cd Marcocenter
 ```
+### 2. Install and apply zod(data validator)
+```bash
+npm install&&npm run build:shared
 
-### 2. Install Frontend Dependencies
+```
+### 3. Install Frontend Dependencies
 
 ```bash
 (cd frontend && npm install)
 ```
 
-### 3. Install Backend Dependencies
+### 4. Install Backend Dependencies
 
 ```bash
 (cd backend && npm install)
