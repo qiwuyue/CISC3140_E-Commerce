@@ -331,6 +331,10 @@ cd Marcocenter
 ```bash
 (cd backend && npm install)
 ```
+### Get stripe test key
+```bash
+(cd backend && stripe sandbox create --from-git)
+```
 
 ### 4. Configure Environment Variables
 
