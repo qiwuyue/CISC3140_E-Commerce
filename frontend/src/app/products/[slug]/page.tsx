@@ -2,10 +2,12 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { getProduct } from "@/lib/product";
+import ProductPurchaseControls from "@/components/products/ProductPurchaseControls";
 
 type ProductDetailPageProps = {
   params: Promise<{
     slug: string;
+    quantity: number;
   }>;
 };
 
@@ -74,8 +76,15 @@ export default async function ProductDetailPage({
                 {product.sku}
               </dd>
             </div>
+
           </dl>
+                  <ProductPurchaseControls
+  productId={product.id}
+  stock={product.quantity}
+
+/>
         </article>
+
       </section>
     </main>
   );

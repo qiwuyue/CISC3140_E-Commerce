@@ -4,7 +4,7 @@ import "./globals.css";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import AuthControls from "@/components/auth/AuthControls";
-
+import { Toaster } from "sonner";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -35,6 +35,7 @@ export default function RootLayout({
       <Header authControls={<AuthControls />} />
       <main className="flex-1">
       {children}
+      <Toaster richColors position="bottom-right" />
       </main>
        <Footer /></body>
     </html>

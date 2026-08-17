@@ -14,6 +14,7 @@ export type Product = {
     id: string;
     name: string;
   };
+  quantity: number;
 }
 type ProductsResponse = {
   data: Product[];
@@ -23,7 +24,7 @@ type ProductResponse = {
 };
 export async function getProducts(
     query = "",
-  ): Promise<Product[]> {
+  ): Promise<Product[]> {    
     const parameters = new URLSearchParams();
 
     if (query.trim()) {
