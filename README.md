@@ -348,7 +348,7 @@ Enter local development values for the variables listed in the **Environment Var
 Set both database connection variables in `backend/.env`. `DATABASE_URL` is used by the running Express application, while `DIRECT_URL` uses the Supabase Session pooler on port `5432` for Prisma CLI and migration commands. Configure `prisma.config.ts` to read `DIRECT_URL`, then run:
 
 ```bash
-(cd backend && npx prisma migrate dev && npx prisma db seed && npx prisma generate)
+(npx prisma migrate deploy && npx prisma generate && npx prisma db seed)
 ```
 
 ### 6. Start the Express Backend
