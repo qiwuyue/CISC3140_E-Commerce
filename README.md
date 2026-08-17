@@ -335,15 +335,15 @@ cd Marcocenter
 ```bash
 (cd backend && stripe sandbox create --from-git)
 ```
+### Stripe Webhook Setup
 
-### 4. Configure Environment Variables
-
-Create local environment files from the example files:
+For local development, start the Stripe CLI webhook listener:
 
 ```bash
-cp frontend/.env.example frontend/.env.local
-cp backend/.env.example backend/.env
+stripe listen --events payment_intent.succeeded,payment_intent.payment_failed --forward-to localhost:4000/api/webhooks/stripe
+get the key and put into env file
 ```
+
 
 Enter local development values for the variables listed in the **Environment Variables** section. Never commit real secret values.
 
