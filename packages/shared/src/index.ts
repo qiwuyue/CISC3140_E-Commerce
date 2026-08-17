@@ -6,3 +6,4 @@ export {
   checkoutSchema,
   type CheckoutInput,
 } from "./checkoutSchema.js";
+export * from "./productSchema.js";
