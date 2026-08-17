@@ -1,0 +1,15 @@
+{
+  "name": "ecommerce-project",
+  "private": true,
+  "workspaces": [
+    "frontend",
+    "backend",
+    "packages/shared"
+  ],
+  "scripts": {
+    "build:shared": "npm run build --workspace=@ecommerce/shared"
+  },
+  "dependencies": {
+    "zod": "^4.4.3"
+  }
+}

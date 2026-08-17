@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { initProfile } from "@/lib/profile";
 
 export async function signup(formData: FormData) {
   const email = String(formData.get("email") ?? "").trim();
@@ -41,6 +42,7 @@ export async function signup(formData: FormData) {
 
 
   if (data.session) {
+    await initProfile(data.session.access_token);
     revalidatePath("/", "layout");
     redirect("/");
   }

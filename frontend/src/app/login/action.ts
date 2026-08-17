@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { initProfile } from "@/lib/profile";
 
 export async function login(formData: FormData) {
   const email = String(formData.get("email") ?? "").trim();
@@ -13,7 +14,7 @@ export async function login(formData: FormData) {
 
   const supabase = await createClient();
 
-  const { error } = await supabase.auth.signInWithPassword({
+  const { data, error } = await supabase.auth.signInWithPassword({
     email,
     password,
   });
@@ -25,7 +26,8 @@ export async function login(formData: FormData) {
       )}`,
     );
   }
-
+  
+  await initProfile(data.session.access_token);
 
   revalidatePath("/", "layout");
 

@@ -112,7 +112,7 @@ export default function Header({
           </Link>
 
         <Link
-            href="/orders"
+            href="/account/orders"
             className="flex items-center gap-2 text-sm font-medium text-slate-600 transition hover:text-blue-600"
           >
             <RotateCcwClock 
