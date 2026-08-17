@@ -46,6 +46,7 @@ const brandNames = [
 type SeedProduct = {
   sku: string;
   name: string;
+  quantity: number;
   description: string;
   price: string;
   isActive: boolean;
@@ -57,6 +58,7 @@ const products: SeedProduct[] = [
   {
     sku: "CPU-AMD-7800X3D",
     name: "AMD Ryzen 7 7800X3D",
+    quantity:10,
     description:
       "8-core gaming processor featuring AMD 3D V-Cache technology.",
     price: "369.99",
@@ -67,6 +69,7 @@ const products: SeedProduct[] = [
   {
     sku: "CPU-INTEL-265K",
     name: "Intel Core Ultra 7 265K",
+    quantity:0,
     description:
       "High-performance desktop processor for gaming and productivity.",
     price: "379.99",
@@ -77,6 +80,7 @@ const products: SeedProduct[] = [
   {
     sku: "GPU-NVIDIA-RTX5070",
     name: "NVIDIA GeForce RTX 5070",
+    quantity:0,
     description:
       "Graphics card designed for high-resolution gaming and creative work.",
     price: "549.99",
@@ -87,6 +91,7 @@ const products: SeedProduct[] = [
   {
     sku: "GPU-AMD-RX9070XT",
     name: "AMD Radeon RX 9070 XT",
+    quantity:8,
     description:
       "High-performance Radeon graphics card for modern gaming systems.",
     price: "649.99",
@@ -97,6 +102,7 @@ const products: SeedProduct[] = [
   {
     sku: "MB-ASUS-B650-PLUS",
     name: "ASUS TUF Gaming B650-PLUS WiFi",
+    quantity:9,
     description:
       "AM5 motherboard with DDR5 memory support and integrated Wi-Fi.",
     price: "199.99",
@@ -107,6 +113,7 @@ const products: SeedProduct[] = [
   {
     sku: "MB-MSI-Z890-TOMAHAWK",
     name: "MSI MAG Z890 Tomahawk WiFi",
+    quantity:0,
     description:
       "Intel desktop motherboard with DDR5 support and integrated Wi-Fi.",
     price: "289.99",
@@ -117,6 +124,7 @@ const products: SeedProduct[] = [
   {
     sku: "RAM-CORSAIR-32-6000",
     name: "Corsair Vengeance 32GB DDR5-6000",
+    quantity:0,
     description:
       "32GB dual-channel DDR5 memory kit for gaming and productivity.",
     price: "109.99",
@@ -127,6 +135,7 @@ const products: SeedProduct[] = [
   {
     sku: "RAM-KINGSTON-32-6000",
     name: "Kingston FURY Beast 32GB DDR5-6000",
+    quantity:7,
     description:
       "High-speed 32GB DDR5 memory kit for modern desktop computers.",
     price: "104.99",
@@ -137,6 +146,7 @@ const products: SeedProduct[] = [
   {
     sku: "SSD-SAMSUNG-990PRO-2TB",
     name: "Samsung 990 PRO 2TB",
+    quantity:8,
     description: "High-performance 2TB PCIe 4.0 NVMe solid-state drive.",
     price: "179.99",
     isActive: true,
@@ -146,6 +156,7 @@ const products: SeedProduct[] = [
   {
     sku: "SSD-WD-SN850X-2TB",
     name: "WD_BLACK SN850X 2TB",
+    quantity:0,
     description: "Fast 2TB NVMe solid-state drive designed for gaming systems.",
     price: "159.99",
     isActive: true,
@@ -155,6 +166,7 @@ const products: SeedProduct[] = [
   {
     sku: "PSU-CORSAIR-RM850E",
     name: "Corsair RM850e 850W",
+    quantity:0,
     description:
       "Fully modular 850-watt power supply for high-performance computers.",
     price: "129.99",
@@ -165,6 +177,7 @@ const products: SeedProduct[] = [
   {
     sku: "PSU-SEASONIC-GX750",
     name: "Seasonic FOCUS GX-750",
+    quantity:6,
     description:
       "Fully modular 750-watt power supply with high energy efficiency.",
     price: "119.99",
@@ -175,6 +188,7 @@ const products: SeedProduct[] = [
   {
     sku: "CASE-NZXT-H7-FLOW",
     name: "NZXT H7 Flow",
+    quantity:7,
     description:
       "Mid-tower computer case designed for airflow and easy cable management.",
     price: "129.99",
@@ -185,6 +199,7 @@ const products: SeedProduct[] = [
   {
     sku: "CASE-CORSAIR-4000D",
     name: "Corsair 4000D Airflow",
+    quantity:0,
     description:
       "Mid-tower case with a ventilated front panel and clean interior layout.",
     price: "104.99",
@@ -195,6 +210,7 @@ const products: SeedProduct[] = [
   {
     sku: "COOLER-NOCTUA-NHD15",
     name: "Noctua NH-D15",
+    quantity:0,
     description:
       "Dual-tower air cooler designed for quiet and efficient CPU cooling.",
     price: "109.99",
@@ -205,6 +221,7 @@ const products: SeedProduct[] = [
   {
     sku: "COOLER-CORSAIR-H100I",
     name: "Corsair iCUE H100i RGB Elite",
+    quantity:7,
     description:
       "240mm all-in-one liquid CPU cooler with customizable RGB lighting.",
     price: "139.99",
