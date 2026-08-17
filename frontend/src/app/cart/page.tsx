@@ -10,6 +10,7 @@ import {
     Trash2,
     ArrowLeft,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 type CartItem = {
     id: string;
@@ -31,7 +32,7 @@ type Cart = {
 
 export default function CartPage() {
     const supabase = createClient();
-
+    const router = useRouter();
     const [cart, setCart] = useState<Cart | null>(null);
     const [loading, setLoading] = useState(true);
 
@@ -337,7 +338,9 @@ export default function CartPage() {
 
         <button
           className="mt-6 w-full rounded-lg bg-slate-900 px-5 py-3 font-semibold text-white transition hover:bg-slate-700"
-        >
+           type="button"
+          onClick={() =>router.push("/checkout")}>
+                        
           Proceed to Checkout
         </button>
 
