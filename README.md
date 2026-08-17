@@ -338,9 +338,9 @@ cd Marcocenter
 ### Stripe Webhook Setup
 
 For local development, start the Stripe CLI webhook listener:
-Need a terminal keep listening
+Need a powershell terminal keep listening
 ```bash
-stripe listen --events payment_intent.succeeded,payment_intent.payment_failed --forward-to localhost:4000/api/webhooks/stripe
+stripe listen --events "payment_intent.succeeded,payment_intent.payment_failed" --forward-to http://localhost:4000/api/webhooks/stripe
 get the key and put into env file
 ```
 
