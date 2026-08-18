@@ -1,8 +1,9 @@
 import { Router } from "express";
 import { requireAuth } from "../middleware/requireAuth.js";
 import { requireAdmin } from "../middleware/requireAdmin.js";
-import { getAdminProducts, createProduct, getProductOptions, updateProduct, getAdminProduct } from "../controllers/adminProductController.js";
+import { getAdminProducts, createProduct, getProductOptions, updateProduct, getAdminProduct,uploadProductImage } from "../controllers/adminProductController.js";
 import { getAdminOrders,getAdminOrder,updateOrderStatus } from "../controllers/adminOrderController.js";
+import {uploadImage} from "../middleware/upload.js"
 const router = Router();
 
 router.get(
@@ -69,5 +70,11 @@ router.patch(
   requireAdmin,
   updateOrderStatus
 );
-
+router.post(
+  "/products/:id/image",
+  requireAuth,
+  requireAdmin,
+  uploadImage,
+  uploadProductImage
+);
 export default router;

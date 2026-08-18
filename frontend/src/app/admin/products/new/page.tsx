@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { createProductSchema } from "@ecommerce/shared";
+import ImageUpload from "@/components/image/imageUpload";
 
 type Option = {
   id: string;
@@ -16,7 +17,7 @@ export default function CreateProductPage() {
 
   const [categories, setCategories] = useState<Option[]>([]);
   const [brands, setBrands] = useState<Option[]>([]);
-
+  const [image, setImage] = useState<File | null>(null);
   const [form, setForm] = useState({
     name: "",
     description: "",
@@ -57,7 +58,7 @@ export default function CreateProductPage() {
 
     loadOptions();
   }, []);
-  
+
   function handleChange(
     event: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
@@ -70,7 +71,7 @@ export default function CreateProductPage() {
       [name]: value,
     }));
   }
-    function handleActiveChange(
+  function handleActiveChange(
     event: React.ChangeEvent<HTMLInputElement>
   ) {
     setForm((current) => ({
@@ -116,6 +117,44 @@ export default function CreateProductPage() {
 
     if (!response.ok) {
       setError(result.error || "Failed to create product");
+      return;
+    }
+    let imageUploadFailed = false;
+
+    if (image) {
+      try {
+        const formData = new FormData();
+        formData.append("image", image);
+
+        const imageResponse = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/api/admin/products/${result.data.id}/image`,
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${session.access_token}`,
+            },
+            body: formData,
+          }
+        );
+
+        if (!imageResponse.ok) {
+          imageUploadFailed = true;
+        }
+      } catch (error) {
+        console.error("Image upload exception:", error);
+        imageUploadFailed = true;
+      }
+    }
+
+    if (imageUploadFailed) {
+      setError(
+        "Product was created, but the image failed to upload. You can upload it later."
+      );
+
+      setTimeout(() => {
+        router.push("/admin/products");
+      }, 2000);
+
       return;
     }
 
@@ -191,6 +230,12 @@ export default function CreateProductPage() {
             className="mt-1 w-full rounded border px-3 py-2"
           />
         </div>
+        <div>
+          <ImageUpload
+            value={image}
+            onChange={setImage}
+          />
+        </div>
 
         <div>
           <label>Category</label>
@@ -247,6 +292,8 @@ export default function CreateProductPage() {
           />
           Active
         </label>
+
+
 
         {error && (
           <p className="text-sm text-red-600">

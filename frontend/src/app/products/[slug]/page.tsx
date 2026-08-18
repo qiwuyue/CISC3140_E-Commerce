@@ -31,11 +31,22 @@ export default async function ProductDetailPage({
       </Link>
 
       <section className="grid gap-10 lg:grid-cols-2 lg:gap-16">
+
         {/* Image Area */}
-        <div className="flex aspect-square items-center justify-center rounded-2xl border border-slate-200 bg-slate-50">
-          <p className="text-sm text-slate-400">
-            Product image coming soon
-          </p>
+        <div className="aspect-square overflow-hidden rounded-2xl border border-slate-200 bg-slate-50">
+          {product.imageUrl ? (
+            <img
+              src={product.imageUrl}
+              alt={product.name}
+              className="h-full w-full object-contain"
+            />
+          ) : (
+            <div className="flex h-full w-full items-center justify-center">
+              <p className="text-sm text-slate-400">
+                No product image
+              </p>
+            </div>
+          )}
         </div>
         {/* Product Details Area */}
         <article className="flex flex-col justify-center">
@@ -78,11 +89,11 @@ export default async function ProductDetailPage({
             </div>
 
           </dl>
-                  <ProductPurchaseControls
-  productId={product.id}
-  stock={product.quantity}
+          <ProductPurchaseControls
+            productId={product.id}
+            stock={product.quantity}
 
-/>
+          />
         </article>
 
       </section>

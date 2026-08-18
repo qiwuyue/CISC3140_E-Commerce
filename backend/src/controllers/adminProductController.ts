@@ -1,6 +1,8 @@
 import type { Request, Response, NextFunction } from "express";
 import { prisma } from "../lib/prisma.js";
 import { createProductSchema,updateProductSchema } from "@ecommerce/shared";
+import { randomUUID } from "node:crypto";
+import { supabase, supabaseAdmin } from "../lib/supabase.js";
 export async function getAdminProducts(
     req: Request,
     res: Response,
@@ -256,5 +258,83 @@ export async function updateProduct(
     });
   } catch (error) {
     next(error);
+  }
+}
+export async function uploadProductImage(
+  req: Request<{id:string}>,
+  res: Response
+) {
+  try {
+    
+    const productId = req.params.id;
+    
+
+    if (!req.file) {
+      return res.status(400).json({
+        error: "No image file was provided.",
+      });
+    }
+
+    const product = await prisma.product.findUnique({
+      where: {
+        id: productId,
+      },
+    });
+
+    if (!product) {
+      return res.status(404).json({
+        error: "Product not found.",
+      });
+    }
+
+    const extensions: Record<string, string> = {
+      "image/jpeg": "jpg",
+      "image/png": "png",
+      "image/webp": "webp",
+    };
+
+    const extension = extensions[req.file.mimetype];
+
+    const storagePath =
+      `products/${productId}/${randomUUID()}.${extension}`;
+
+    const { error: uploadError } = await supabaseAdmin.storage
+      .from("product-image")
+      .upload(storagePath, req.file.buffer, {
+        contentType: req.file.mimetype,
+        upsert: false,
+      });
+
+    if (uploadError) {
+      console.error("Supabase upload error:", uploadError);
+
+      return res.status(500).json({
+        error: "Failed to upload product image.",
+      });
+    }
+
+    const { data } = supabaseAdmin.storage
+      .from("product-image")
+      .getPublicUrl(storagePath);
+
+    const updatedProduct = await prisma.product.update({
+      where: {
+        id: productId,
+      },
+      data: {
+        imageUrl: data.publicUrl,
+      },
+    });
+
+    return res.status(200).json({
+      message: "Product image uploaded successfully.",
+      product: updatedProduct,
+    });
+  } catch (error) {
+    console.error("Upload product image error:", error);
+
+    return res.status(500).json({
+      error: "Failed to upload product image.",
+    });
   }
 }

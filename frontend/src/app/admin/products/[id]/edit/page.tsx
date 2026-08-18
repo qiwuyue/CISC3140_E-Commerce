@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { createProductSchema } from "@ecommerce/shared";
+import ImageUpload from "@/components/image/imageUpload";
+import { toast } from "sonner";
 
 type Option = {
   id: string;
@@ -19,6 +21,10 @@ export default function EditProductPage() {
   const [brands, setBrands] = useState<Option[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [image, setImage] = useState<File | null>(null);
+  const [currentImageUrl, setCurrentImageUrl] =
+    useState<string | null>(null);
+
 
   const [form, setForm] = useState({
     name: "",
@@ -80,6 +86,7 @@ export default function EditProductPage() {
         brandId: product.brandId,
         isActive: product.isActive,
       });
+      setCurrentImageUrl(product.imageUrl ?? null);
 
       setCategories(
         optionsResult.data.categories
@@ -138,25 +145,56 @@ export default function EditProductPage() {
     } = await supabase.auth.getSession();
 
     if (!session) return;
-
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/api/admin/products/${params.id}`,
-      {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${session.access_token}`,
-        },
-        body: JSON.stringify(validation.data),
-      }
-    );
-
-    if (!response.ok) {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/api/admin/products/${params.id}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${session.access_token}`,
+          },
+          body: JSON.stringify(validation.data),
+        }
+      );
       const result = await response.json();
-      setError(result.error || "Failed to update product");
-      return;
-    }
+      if (!response.ok) {
 
+        setError(result.error || "Failed to update product");
+        return;
+      }
+      //upload image
+      if (image) {
+        const formData = new FormData();
+
+        formData.append("image", image);
+
+        const imageResponse = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/api/admin/products/${params.id}/image`,
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${session.access_token}`,
+            },
+            body: formData,
+          }
+        );
+
+        const imageResult = await imageResponse.json();
+
+        if (!imageResponse.ok) {
+          setError(
+            imageResult.error || "Product updated, but image upload failed."
+          );
+          return;
+        }
+      }
+    } catch (error) {
+      setError(
+        "Unable to connect to the server. Please try again."
+      );
+
+    }
     router.push("/admin/products");
   }
 
@@ -228,6 +266,14 @@ export default function EditProductPage() {
         </div>
 
         <div>
+          <ImageUpload
+            value={image}
+            onChange={setImage}
+            currentImageUrl={currentImageUrl}
+          />
+        </div>
+
+        <div>
           <label>Category</label>
           <select
             name="categoryId"
@@ -287,6 +333,7 @@ export default function EditProductPage() {
           Save Changes
         </button>
       </form>
+
     </main>
   );
 } 
