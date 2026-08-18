@@ -1,8 +1,7 @@
-// controllers/productController.ts
-
 import type { Request, Response } from "express";
 
 import { prisma } from "../lib/prisma.js";
+
 
 export async function getProducts(
   req: Request,

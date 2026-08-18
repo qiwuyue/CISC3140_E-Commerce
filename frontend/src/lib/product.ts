@@ -6,6 +6,7 @@ export type Product = {
   price: string;
   isActive: boolean;
   slug: string;
+  imageUrl: string | null;
   category: {
     id: string;
     name: string;

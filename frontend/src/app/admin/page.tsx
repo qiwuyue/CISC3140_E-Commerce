@@ -27,7 +27,7 @@ export default function AdminDashboardPage() {
             and manage inventory.
           </p>
         </Link>
-
+      
         <Link
           href="/admin/orders"
           className="rounded-xl border p-6"

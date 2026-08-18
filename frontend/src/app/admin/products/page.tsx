@@ -56,14 +56,23 @@ export default function AdminProductsPage() {
 
     return (
         <main className="mx-auto max-w-7xl px-6 py-10">
-            <div className="mb-8">
-                <h1 className="text-3xl font-bold">
-                    Products
-                </h1>
+            <div className="relative mb-8">
+                <div>
+                    <h1 className="text-3xl font-bold">
+                        Products
+                    </h1>
 
-                <p className="mt-2 text-gray-500">
-                    Manage products and inventory.
-                </p>
+                    <p className="mt-2 text-gray-500">
+                        Manage products and inventory.
+                    </p>
+                </div>
+
+                <Link
+                    href="/admin/products/new"
+                    className="absolute right-0 top-0 rounded-lg bg-black px-5 py-2.5 font-medium text-white hover:bg-gray-800"
+                >
+                    Add Product
+                </Link>
             </div>
 
             <div className="overflow-hidden rounded-xl border">

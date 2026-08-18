@@ -42,6 +42,19 @@ export default function ProductCard({
           {product.description ?? "No description available."}
 
         </p>
+        <div className="aspect-square overflow-hidden rounded-xl bg-slate-50">
+          {product.imageUrl ? (
+            <img
+              src={product.imageUrl}
+              alt={product.name}
+              className="h-full w-full object-contain p-3"
+            />
+          ) : (
+            <div className="flex h-full items-center justify-center text-sm text-slate-400">
+              No image
+            </div>
+          )}
+        </div>
         <div className="relative">
 
           <p className="absolute bottom-0 right-0 text-xs text-slate-400">
@@ -55,8 +68,8 @@ export default function ProductCard({
         </p>
         <div className="mt-auto pt-5">
           <AddToCartButton productId={product.id}
-          stock={product.quantity}
-           />
+            stock={product.quantity}
+          />
         </div>
 
 
