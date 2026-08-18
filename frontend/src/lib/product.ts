@@ -18,19 +18,31 @@ export type Product = {
 }
 type ProductsResponse = {
   data: Product[];
+
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
 };
 type ProductResponse = {
   data: Product;
 };
+
+
 export async function getProducts(
     query = "",
-  ): Promise<Product[]> {    
+    sort= "newest",
+    page = 1,
+  ): Promise<ProductsResponse> {    
     const parameters = new URLSearchParams();
 
     if (query.trim()) {
       parameters.set("q", query.trim());
     }
-
+    parameters.set("sort", sort);
+    parameters.set("page", String(page));
     const queryString = parameters.toString();
 
     const url =
@@ -50,7 +62,7 @@ export async function getProducts(
     const result: ProductsResponse =
       await response.json();
 
-    return result.data;
+    return result;
 }
 
 export async function getProduct(

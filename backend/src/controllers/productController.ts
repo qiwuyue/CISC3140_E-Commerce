@@ -8,71 +8,130 @@ export async function getProducts(
   req: Request,
   res: Response
 ) {
-   try {
+  try {
     const query =
       typeof req.query.q === "string"
         ? req.query.q.trim()
         : "";
+    //sorting product    
+    const sort =
+      typeof req.query.sort === "string"
+        ? req.query.sort
+        : "newest";
+    //pagination
+    const page = Math.max(
+      Number(req.query.page) || 1,
+      1
+    );
 
-    const products = await prisma.product.findMany({
-      where: {
-        isActive: true,
+    const limit = 12;
 
-        ...(query
-          ? {
-              OR: [
-                {
-                  name: {
-                    contains: query,
-                    mode: "insensitive",
-                  },
-                },
-                {
-                  description: {
-                    contains: query,
-                    mode: "insensitive",
-                  },
-                },
-                {
-                  sku: {
-                    contains: query,
-                    mode: "insensitive",
-                  },
-                },
-                {
-                  category: {
-                    name: {
-                      contains: query,
-                      mode: "insensitive",
-                    },
-                  },
-                },
-                {
-                  brand: {
-                    name: {
-                      contains: query,
-                      mode: "insensitive",
-                    },
-                  },
-                },
-              ],
-            }
-          : {}),
-      },
+    const skip = (page - 1) * limit;
+    let orderBy;
 
-      include: {
-        category: true,
-        brand: true,
-      },
+    switch (sort) {
+      case "price_asc":
+        orderBy = {
+          price: "asc" as const,
+        };
+        break;
 
-      orderBy: {
-        CreateAt: "desc",
-      },
-    });
+      case "price_desc":
+        orderBy = {
+          price: "desc" as const,
+        };
+        break;
 
+      case "name_asc":
+        orderBy = {
+          name: "asc" as const,
+        };
+        break;
+
+      case "newest":
+      default:
+        orderBy = {
+          CreateAt: "desc" as const,
+        };
+    }
+
+    const where = {
+      isActive: true,
+
+      ...(query
+        ? {
+          OR: [
+            {
+              name: {
+                contains: query,
+                mode: "insensitive" as const,
+              },
+            },
+            {
+              description: {
+                contains: query,
+                mode: "insensitive" as const,
+              },
+            },
+            {
+              sku: {
+                contains: query,
+                mode: "insensitive" as const,
+              },
+            },
+            {
+              category: {
+                name: {
+                  contains: query,
+                  mode: "insensitive" as const,
+                },
+              },
+            },
+            {
+              brand: {
+                name: {
+                  contains: query,
+                  mode: "insensitive" as const,
+                },
+              },
+            },
+          ],
+        }
+        : {}),
+    };
+
+    const [products, total] = await Promise.all([
+      prisma.product.findMany({
+        where,
+
+        include: {
+          category: true,
+          brand: true,
+        },
+
+        orderBy,
+        skip,
+        take: limit,
+      }),
+
+      prisma.product.count({
+        where,
+      }),
+    ]);
+
+    const totalPages = Math.ceil(total / limit);
+    
     res.status(200).json({
       data: products,
+
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages,
+      },
     });
+
   } catch (error) {
     console.error("Error fetching products:", error);
 
@@ -85,9 +144,9 @@ export async function getProducts(
 export async function getProductBySlug(
   req: Request<{ slug: string }>,
   res: Response
-){
+) {
 
- try {
+  try {
     const { slug } = req.params;
 
     const product = await prisma.product.findUnique({
