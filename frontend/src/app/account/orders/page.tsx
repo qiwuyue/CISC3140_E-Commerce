@@ -13,23 +13,31 @@ type OrderItem = {
   sku: string;
   price: string;
   quantity: number;
+  imageUrl: string | null;
 };
 
 type Order = {
   id: string;
+  shippingName: string;
+  shippingPhone: string | null;
+  shippingAddress1: string;
+  shippingAddress2: string | null;
+  shippingCity: string;
+  shippingState: string;
+  shippingPostalCode: string;
 
   status:
-    | "PENDING"
-    | "PROCESSING"
-    | "SHIPPED"
-    | "DELIVERED"
-    | "CANCELLED";
+  | "PENDING"
+  | "PROCESSING"
+  | "SHIPPED"
+  | "DELIVERED"
+  | "CANCELLED";
 
   paymentStatus:
-    | "PENDING"
-    | "PAID"
-    | "FAILED"
-    | "REFUNDED";
+  | "PENDING"
+  | "PAID"
+  | "FAILED"
+  | "REFUNDED";
 
   subtotal: string;
   shipping: string;
@@ -40,6 +48,27 @@ type Order = {
 
   items: OrderItem[];
 };
+function getStatusStyle(status: string) {
+  switch (status) {
+    case "PENDING":
+      return "bg-yellow-100 text-yellow-700";
+
+    case "PROCESSING":
+      return "bg-blue-100 text-blue-700";
+
+    case "SHIPPED":
+      return "bg-purple-100 text-purple-700";
+
+    case "DELIVERED":
+      return "bg-green-100 text-green-700";
+
+    case "CANCELLED":
+      return "bg-red-100 text-red-700";
+
+    default:
+      return "bg-gray-100 text-gray-700";
+  }
+}
 
 export default function OrdersPage() {
   const router = useRouter();
@@ -49,7 +78,7 @@ export default function OrdersPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function loadOrders() {
+    async function fetchOrders() {
       try {
         const {
           data: { session },
@@ -89,12 +118,12 @@ export default function OrdersPage() {
       }
     }
 
-    loadOrders();
+    fetchOrders();
   }, [router]);
 
   if (loading) {
     return (
-      <main className="mx-auto max-w-5xl px-6 py-12">
+      <main className="mx-auto min-h-[70vh] w-full max-w-7xl px-6 py-12">
         <p className="text-gray-500">
           Loading orders...
         </p>
@@ -103,7 +132,7 @@ export default function OrdersPage() {
   }
 
   return (
-    <main className="mx-auto max-w-5xl px-6 py-12">
+    <main className="mx-auto min-h-[70vh] w-full max-w-7xl px-6 py-12">
       <div className="mb-8">
         <h1 className="text-3xl font-bold">
           Order History
@@ -132,71 +161,134 @@ export default function OrdersPage() {
           </Link>
         </div>
       ) : (
-        <div className="space-y-4">
-          {orders.map((order) => (
-            <Link
-              key={order.id}
-              href={`/account/orders/${order.id}`}
-              className="block rounded-xl border bg-white p-6 shadow-sm transition hover:border-gray-400"
-            >
-              <div className="flex flex-col justify-between gap-4 sm:flex-row">
-                <div>
-                  <p className="text-sm text-gray-500">
-                    Order
-                  </p>
+        <div className="overflow-x-auto rounded-xl border bg-white">
+          <table className="w-full min-w-[950px] text-left">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-6 py-4 text-sm font-semibold">
+                  Order
+                </th>
 
-                  <p className="font-medium">
-                    #{order.id}
-                  </p>
-                </div>
+                <th className="px-6 py-4 text-sm font-semibold">
+                  Products
+                </th>
 
-                <div>
-                  <p className="text-sm text-gray-500">
-                    Date
-                  </p>
+                <th className="px-6 py-4 text-sm font-semibold">
+                  Date
+                </th>
 
-                  <p className="font-medium">
-                    {new Date(
-                      order.createdAt
-                    ).toLocaleDateString()}
-                  </p>
-                </div>
+                <th className="px-6 py-4 text-sm font-semibold">
+                  Total
+                </th>
 
-                <div>
-                  <p className="text-sm text-gray-500">
-                    Status
-                  </p>
+                <th className="px-6 py-4 text-sm font-semibold">
+                  Status
+                </th>
 
-                  <p className="font-medium">
-                    {order.status}
-                  </p>
-                </div>
+                <th className="px-6 py-4" />
+              </tr>
+            </thead>
 
-                <div>
-                  <p className="text-sm text-gray-500">
-                    Total
-                  </p>
+            <tbody>
+              {orders.map((order) => (
+                <tr
+                  key={order.id}
+                  className="border-t transition hover:bg-gray-50"
+                >
+  
+                  <td className="px-6 py-5 align-top">
+                    <Link
+                      href={`/account/orders/${order.id}`}
+                      className="font-medium hover:underline"
+                    >
+                      #{order.id.slice(0, 10)}...
+                    </Link>
+                  </td>
 
-                  <p className="font-semibold">
+
+                  <td className="px-6 py-5">
+                    <div className="space-y-3">
+                      {order.items.slice(0, 3).map((item) => (
+                        <div
+                          key={item.id}
+                          className="flex items-center gap-3"
+                        >
+     
+                          <div className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-lg border bg-gray-50">
+                            {item.imageUrl ? (
+                              <img
+                                src={item.imageUrl}
+                                alt={item.productName}
+                                className="h-full w-full object-contain p-1"
+                              />
+                            ) : (
+                              <span className="text-xs text-gray-400">
+                                No image
+                              </span>
+                            )}
+                          </div>
+
+
+                          <div className="min-w-0">
+                            <p className="max-w-[260px] truncate font-medium">
+                              {item.productName}
+                            </p>
+
+                            <p className="mt-1 text-sm text-gray-500">
+                              Qty: {item.quantity}
+                            </p>
+                          </div>
+                        </div>
+                      ))}
+
+                      {/* More than 3 products */}
+                      {order.items.length > 3 && (
+                        <p className="text-sm text-gray-500">
+                          +{order.items.length - 3} more{" "}
+                          {order.items.length - 3 === 1
+                            ? "item"
+                            : "items"}
+                        </p>
+                      )}
+                    </div>
+                  </td>
+
+
+                  <td className="px-6 py-5 align-top">
+                    {new Date(order.createdAt).toLocaleDateString()}
+                  </td>
+
+
+                  <td className="px-6 py-5 align-top font-medium">
                     ${Number(order.total).toFixed(2)}
-                  </p>
-                </div>
-              </div>
+                  </td>
 
-              <div className="mt-5 border-t pt-4">
-                <p className="text-sm text-gray-500">
-                  {order.items.reduce(
-                    (total, item) =>
-                      total + item.quantity,
-                    0
-                  )}{" "}
-                  item(s)
-                </p>
-              </div>
-            </Link>
-          ))}
+
+                  <td className="px-6 py-5 align-top">
+                    <span
+                      className={`inline-block rounded-full px-3 py-1 text-xs font-medium ${getStatusStyle(
+                        order.status
+                      )}`}
+                    >
+                      {order.status}
+                    </span>
+                  </td>
+
+                  <td className="px-6 py-5 align-top text-right">
+                    <Link
+                      href={`/account/orders/${order.id}`}
+                      className="whitespace-nowrap text-sm font-medium hover:underline"
+                    >
+                      View details →
+                    </Link>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
-      )}
+      )
+      }
     </main>
   );
 }
