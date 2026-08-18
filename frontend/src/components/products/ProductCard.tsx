@@ -38,10 +38,6 @@ export default function ProductCard({
           {product.name}
         </h2>
 
-        <p className="mt-2 flex-1 text-sm leading-6 text-slate-600">
-          {product.description ?? "No description available."}
-
-        </p>
         <div className="aspect-square overflow-hidden rounded-xl bg-slate-50">
           {product.imageUrl ? (
             <img

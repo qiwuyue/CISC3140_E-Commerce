@@ -95,7 +95,15 @@ export default async function ProductDetailPage({
 
           />
         </article>
+        <div className="mt-6 border-t border-gray-200 pt-6">
+          <h2 className="mb-3 text-lg font-semibold text-gray-900">
+            Product Description
+          </h2>
 
+          <p className="whitespace-pre-line leading-7 text-gray-600">
+            {product.description}
+          </p>
+        </div>
       </section>
     </main>
   );
