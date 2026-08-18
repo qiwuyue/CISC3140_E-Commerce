@@ -32,7 +32,7 @@ export default function CreateProductPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    async function loadOptions() {
+    async function fetchOptions() {
       const {
         data: { session },
       } = await supabase.auth.getSession();
@@ -56,7 +56,7 @@ export default function CreateProductPage() {
       setBrands(result.data.brands);
     }
 
-    loadOptions();
+    fetchOptions();
   }, []);
 
   function handleChange(

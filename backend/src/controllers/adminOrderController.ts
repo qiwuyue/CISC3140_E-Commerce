@@ -17,23 +17,101 @@ export async function getAdminOrders(
     next: NextFunction
 ) {
     try {
-        const orders = await prisma.order.findMany({
-            where: {
-                paymentStatus: "PAID",
-            },
 
-            include: {
-                items: true,
-                user: true,
-            },
+        const search =
+            typeof req.query.search === "string"
+                ? req.query.search.trim()
+                : "";
 
-            orderBy: {
-                createdAt: "desc",
-            },
-        });
+        const status =
+            typeof req.query.status === "string"
+                ? req.query.status
+                : "all";
+
+        const page = Math.max(
+            Number(req.query.page) || 1,
+            1
+        );
+
+        const limit = Math.min(
+            Math.max(Number(req.query.limit) || 10, 1),
+            50
+        );
+
+        const skip = (page - 1) * limit;
+
+        const where = {
+            paymentStatus: "PAID" as const,
+            ...(search && {
+                OR: [
+                    {
+                        id: {
+                            contains: search,
+                            mode: "insensitive" as const,
+                        },
+                    },
+                    {
+                        shippingName: {
+                            contains: search,
+                            mode: "insensitive" as const,
+                        },
+                    },
+                    {
+                        shippingPhone: {
+                            contains: search,
+                        },
+                    },
+                ],
+            }),
+
+            ...(status === "PENDING" && {
+                status: "PENDING" as const,
+            }),
+
+            ...(status === "PROCESSING" && {
+                status: "PROCESSING" as const,
+            }),
+
+            ...(status === "SHIPPED" && {
+                status: "SHIPPED" as const,
+            }),
+
+            ...(status === "DELIVERED" && {
+                status: "DELIVERED" as const,
+            }),
+
+            ...(status === "CANCELLED" && {
+                status: "CANCELLED" as const,
+            }),
+        };
+
+        const [orders, total] = await Promise.all([
+            prisma.order.findMany({
+                where,
+                include: {
+                    items: true,
+                    user: true,
+                },
+
+                orderBy: {
+                    createdAt: "desc",
+                },
+                skip,
+                take: limit,
+            }),
+            prisma.order.count({
+                where,
+            })]
+        );
 
         return res.status(200).json({
             data: orders,
+            pagination: {
+                page,
+                limit,
+                total,
+                totalPages: Math.ceil(total / limit),
+            }
         });
     } catch (error) {
         next(error);

@@ -21,7 +21,7 @@ export default async function AccountLayout({
   }
 
   return (
-    <main className="mx-auto min-h-[70vh] max-w-4xl px-6 py-12">
+    <main className="mx-auto min-h-[70vh] w-full max-w-7xl px-6 py-12">
       <header>
         <h1 className="text-3xl font-bold text-slate-900">
           My Account
