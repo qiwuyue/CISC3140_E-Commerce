@@ -149,56 +149,58 @@ export default function AdminProductsPage() {
                 </select>
             </div>
             <div className="overflow-hidden rounded-xl border">
-                <table className="w-full text-left">
-                    <thead className="bg-gray-50">
-                        <tr>
-                            <th className="px-4 py-3">Product</th>
-                            <th className="px-4 py-3">SKU</th>
-                            <th className="px-4 py-3">Price</th>
-                            <th className="px-4 py-3">Inventory</th>
-                            <th className="px-4 py-3">Status</th>
-                            <th className="px-4 py-3">Actions</th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-                        {products.map((product) => (
-                            <tr
-                                key={product.id}
-                                className="border-t"
-                            >
-                                <td className="px-4 py-4 font-medium">
-                                    {product.name}
-                                </td>
-
-                                <td className="px-4 py-4">
-                                    {product.sku}
-                                </td>
-
-                                <td className="px-4 py-4">
-                                    ${Number(product.price).toFixed(2)}
-                                </td>
-
-                                <td className="px-4 py-4">
-                                    {product.quantity}
-                                </td>
-
-                                <td className="px-4 py-4">
-                                    {product.isActive ? "Active" : "Inactive"}
-                                </td>
-
-                                <td className="px-4 py-4">
-                                    <Link
-                                        href={`/admin/products/${product.id}/edit`}
-                                        className="text-sm font-medium"
-                                    >
-                                        Edit
-                                    </Link>
-                                </td>
+                <div className="overflow-x-auto">
+                    <table className="w-full min-w-[1000px]">
+                        <thead className="bg-gray-50">
+                            <tr>
+                                <th className="px-4 py-3">Product</th>
+                                <th className="px-4 py-3">SKU</th>
+                                <th className="px-4 py-3">Price</th>
+                                <th className="px-4 py-3">Inventory</th>
+                                <th className="px-4 py-3">Status</th>
+                                <th className="px-4 py-3">Actions</th>
                             </tr>
-                        ))}
-                    </tbody>
-                </table>
+                        </thead>
+
+                        <tbody>
+                            {products.map((product) => (
+                                <tr
+                                    key={product.id}
+                                    className="border-t"
+                                >
+                                    <td className="px-4 py-4 font-medium">
+                                        {product.name}
+                                    </td>
+
+                                    <td className="px-4 py-4">
+                                        {product.sku}
+                                    </td>
+
+                                    <td className="px-4 py-4">
+                                        ${Number(product.price).toFixed(2)}
+                                    </td>
+
+                                    <td className="px-4 py-4">
+                                        {product.quantity}
+                                    </td>
+
+                                    <td className="px-4 py-4">
+                                        {product.isActive ? "Active" : "Inactive"}
+                                    </td>
+
+                                    <td className="px-4 py-4">
+                                        <Link
+                                            href={`/admin/products/${product.id}/edit`}
+                                            className="text-sm font-medium"
+                                        >
+                                            Edit
+                                        </Link>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
                 <div className="mt-6 flex items-center justify-between">
                     <button
                         type="button"

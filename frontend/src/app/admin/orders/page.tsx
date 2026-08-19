@@ -189,88 +189,90 @@ export default function AdminOrdersPage() {
                 </select>
             </div>
             <div className="overflow-hidden rounded-xl border">
-                <table className="w-full text-left">
-                    <thead className="bg-gray-50">
-                        <tr>
-                            <th className="px-4 py-3">Order</th>
-                            <th className="px-4 py-3">Customer</th>
-                            <th className="px-4 py-3">Date</th>
-                            <th className="px-4 py-3">Items</th>
-                            <th className="px-4 py-3">Total</th>
-                            <th className="px-4 py-3">Ship To</th>
-                            <th className="px-4 py-3">Phone</th>
-                            <th className="px-4 py-3">Status</th>
-                            <th className="px-4 py-3">Actions</th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-                        {orders.map((order) => (
-                            <tr
-                                key={order.id}
-                                className="border-t"
-                            >
-                                <td className="px-4 py-4">
-                                    #{order.id.slice(0, 12)}...
-                                </td>
-
-                                <td className="px-4 py-4">
-                                    {order.shippingName}
-                                </td>
-
-                                <td className="px-4 py-4">
-                                    {new Date(
-                                        order.createdAt
-                                    ).toLocaleDateString()}
-                                </td>
-
-                                <td className="px-4 py-4">
-                                    {order.items.reduce(
-                                        (total, item) =>
-                                            total + item.quantity,
-                                        0
-                                    )}
-                                </td>
-
-                                <td className="px-4 py-4 font-medium">
-                                    ${Number(order.total).toFixed(2)}
-                                </td>
-                                <td className="px-4 py-4">
-                                    <p>{order.shippingAddress1}</p>
-
-                                    {order.shippingAddress2 && (
-                                        <p>{order.shippingAddress2}</p>
-                                    )}
-
-                                    <p className="text-sm text-gray-500">
-                                        {order.shippingCity}, {order.shippingState}{" "}
-                                        {order.shippingPostalCode}
-                                    </p>
-                                </td>
-                                <td className="px-4 py-4">
-                                    {order.shippingPhone || "—"}
-                                </td>
-                                <td className="px-6 py-5 align-top">
-                                    <span
-                                        className={`inline-block rounded-full px-3 py-1 text-xs font-medium ${getStatusStyle(
-                                            order.status
-                                        )}`}
-                                    >
-                                        {order.status}
-                                    </span>
-                                </td>
-                                <td className="px-4 py-4">
-                                    <Link
-                                        href={`/admin/orders/${order.id}`}
-                                        className="font-medium"
-                                    >
-                                        View
-                                    </Link>
-                                </td>
+                <div className="overflow-x-auto">
+                    <table className="w-full min-w-[1000px]">
+                        <thead className="bg-gray-50">
+                            <tr>
+                                <th className="px-4 py-3">Order</th>
+                                <th className="px-4 py-3">Customer</th>
+                                <th className="px-4 py-3">Date</th>
+                                <th className="px-4 py-3">Items</th>
+                                <th className="px-4 py-3">Total</th>
+                                <th className="px-4 py-3">Ship To</th>
+                                <th className="px-4 py-3">Phone</th>
+                                <th className="px-4 py-3">Status</th>
+                                <th className="px-4 py-3">Actions</th>
                             </tr>
-                        ))}
-                    </tbody>
-                </table>
+                        </thead>
+
+                        <tbody>
+                            {orders.map((order) => (
+                                <tr
+                                    key={order.id}
+                                    className="border-t"
+                                >
+                                    <td className="px-4 py-4">
+                                        #{order.id.slice(0, 12)}...
+                                    </td>
+
+                                    <td className="px-4 py-4">
+                                        {order.shippingName}
+                                    </td>
+
+                                    <td className="px-4 py-4">
+                                        {new Date(
+                                            order.createdAt
+                                        ).toLocaleDateString()}
+                                    </td>
+
+                                    <td className="px-4 py-4">
+                                        {order.items.reduce(
+                                            (total, item) =>
+                                                total + item.quantity,
+                                            0
+                                        )}
+                                    </td>
+
+                                    <td className="px-4 py-4 font-medium">
+                                        ${Number(order.total).toFixed(2)}
+                                    </td>
+                                    <td className="px-4 py-4">
+                                        <p>{order.shippingAddress1}</p>
+
+                                        {order.shippingAddress2 && (
+                                            <p>{order.shippingAddress2}</p>
+                                        )}
+
+                                        <p className="text-sm text-gray-500">
+                                            {order.shippingCity}, {order.shippingState}{" "}
+                                            {order.shippingPostalCode}
+                                        </p>
+                                    </td>
+                                    <td className="px-4 py-4">
+                                        {order.shippingPhone || "—"}
+                                    </td>
+                                    <td className="px-6 py-5 align-top">
+                                        <span
+                                            className={`inline-block rounded-full px-3 py-1 text-xs font-medium ${getStatusStyle(
+                                                order.status
+                                            )}`}
+                                        >
+                                            {order.status}
+                                        </span>
+                                    </td>
+                                    <td className="px-4 py-4">
+                                        <Link
+                                            href={`/admin/orders/${order.id}`}
+                                            className="font-medium"
+                                        >
+                                            View
+                                        </Link>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
                 <div className="mt-6 flex items-center justify-between">
                     <button
                         type="button"
