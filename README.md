@@ -2,19 +2,13 @@
 
 > A full-stack PC hardware e-commerce platform built with Next.js, Express, and PostgreSQL.
 
-## Project Status
-
-Marcocenter is currently in the planning and project-setup stage. Application features listed under **Planned or Incomplete Features** have not yet been completed. This README will be updated throughout development so that the documented status matches the working application.
-
-The Next.js frontend and Express backend have been initialized. Prisma is configured to connect to Supabase PostgreSQL, while customer authentication will be provided by Supabase Auth. Authentication has been selected architecturally but has not yet been implemented in the application.
-
 ## Team Members
 
 | Team Member | Primary Contributions |
 | --- | --- |
 | `Yuefeng Xiao` | Project planning, UI/UX, frontend development, REST API development, database design, authentication and authorization, payment integration, testing, deployment, and documentation |
+| `Candice` |documentation|
 
-This project is currently planned as an individual project. The development process will still use GitHub Issues, a GitHub Project board, feature branches, pull requests, code reviews, and meaningful commits.
 
 ## Project Description
 
@@ -30,9 +24,9 @@ Marcocenter is differentiated by its focus on PC-building needs. In addition to 
 
 ### Completed Features
 
-No customer-facing or administrator-facing application features have been completed yet.
-
 The following project-planning work is complete:
+
+#### Setup features
 
 - Store concept and target audience defined
 - Required technology stack selected
@@ -43,48 +37,54 @@ The following project-planning work is complete:
 - Express backend application initialized
 - Prisma ORM configured with Supabase PostgreSQL
 - Supabase Auth selected as the authentication provider
-
-### Planned or Incomplete Features
-
-#### Customer Features
+#### Customer features
 
 - Responsive home page and navigation
 - Product catalog with pagination
 - Search by product name, brand, or keyword
-- Filter by category, brand, price, availability, and hardware specifications
-- Product detail pages with images, specifications, price, and stock status
+- Filter by category, brand, price
+- Product detail pages with images, descriptions, price, and stock status
 - Supabase Auth registration, login, logout, password recovery, and protected account pages
 - Persistent shopping cart
 - Server-side price and inventory validation
 - Stripe test-mode checkout
 - Order confirmation and order history
-- Product reviews and ratings
-- Wishlist
 - Loading, empty, validation, and error states
-- Basic PC-component compatibility guidance
-
 #### Administrator Features
 
 - Role-protected administrator dashboard
-- Create, update, deactivate, and delete products
-- Manage categories, brands, product images, and specifications
-- Adjust inventory and review inventory history
-- Low-stock alerts
-- View and update order status
-- View customers and account roles
-- Sales, order, inventory, and best-selling-product analytics
-- Administrator activity log
-
+- Create, update and deactivate products
+- Manage categories, brands, product images, and descriptions
+- Adjust inventory
+- View and update customer order status
 #### Engineering and Quality Features
 
 - Request validation and centralized API error handling
 - Authentication and role-based authorization
 - Stripe webhook signature verification
 - Database migrations and seed data
-- Unit, integration, and end-to-end tests
 - API documentation
 - Responsive and accessible interface
 - Production deployment with separate frontend and backend applications
+
+### Planned and Incomplete Features
+
+#### Customer Features
+
+- Compare specifications
+- Product reviews and ratings
+- Wishlist
+- Basic PC-component compatibility guidance
+
+#### Administrator Features
+- review inventory history
+- Low-stock alerts
+- Sales, order, inventory, and best-selling-product analytics
+- Administrator activity log
+
+#### Engineering and Quality Features
+
+- Unit, integration, and end-to-end tests
 
 ## Technology Stack
 
@@ -95,13 +95,14 @@ The following project-planning work is complete:
 | Database | PostgreSQL, Prisma ORM |
 | Authentication | Supabase Auth, Supabase-issued JWT access tokens, Express authentication middleware |
 | Payments | Stripe Test Mode and Stripe webhooks |
-| Frontend deployment | Vercel |
-| Backend deployment | Render |
 | Hosted services | Supabase PostgreSQL, Supabase Auth, Supabase Storage |
-| Backend testing | Vitest and Supertest |
-| Frontend/end-to-end testing | Vitest, Playwright |
+
 | Validation and utilities | Zod, CORS, Stripe SDK |
 
+### Planned Stack and Incomplete Features
+
+| Backend testing | Vitest and Supertest |
+| Frontend/end-to-end testing | Vitest, Playwright |
 
 ## Application Architecture
 
@@ -123,7 +124,7 @@ Supabase Auth is responsible for account creation, password handling, login, log
 
 The separate Express application exposes REST API routes. It validates incoming data, verifies Supabase access tokens, applies business rules, authorizes administrator actions, calculates trusted prices, checks inventory, communicates with Stripe, and reads from or writes to PostgreSQL through Prisma.
 
-The frontend communicates directly with Supabase only for authentication. It does **not** directly access core business tables. Product, cart, inventory, order, review, wishlist, and analytics data follow this path:
+The frontend communicates directly with Supabase only for authentication. It does **not** directly access core business tables. Product, cart, inventory, order follow this path:
 
 ```text
 Next.js frontend
@@ -144,7 +145,7 @@ Supabase PostgreSQL
 
 Supabase Auth answers **who the user is**. Express remains responsible for **what the user is allowed to do**. Administrator privileges, resource ownership, inventory changes, and order access are enforced by the Express API rather than trusted from frontend state.
 
-## Planned Repository Structure
+## Repository Structure
 
 ```text
 Marcocenter/
