@@ -662,24 +662,39 @@ Screenshots will be added after the corresponding pages are implemented.
 Planned screenshots:
 
 - Home page
+  <img width="2149" height="1348" alt="image" src="https://github.com/user-attachments/assets/916aa14a-31e4-4e81-b505-4af3bec2fcee" />
 - Product catalog and filters
+  <img width="2137" height="1344" alt="image" src="https://github.com/user-attachments/assets/ebd4be61-bd0b-4499-a453-67e517ba0620" />
 - Product detail page
+  <img width="2139" height="1171" alt="image" src="https://github.com/user-attachments/assets/93e32501-4cff-4247-a111-533b06f989cd" />
 - Shopping cart
+  <img width="2166" height="1358" alt="image" src="https://github.com/user-attachments/assets/216cef3a-9c8e-4155-a5b3-590e5b757118" />
 - Stripe test checkout and order confirmation
+  <img width="2485" height="1349" alt="image" src="https://github.com/user-attachments/assets/d36722e8-93db-4dc9-a930-5c8556dd87f1" />
+  <img width="2180" height="1283" alt="image" src="https://github.com/user-attachments/assets/6bbef4e0-f1e8-4c43-b130-39a82c22cbb0" />
 - Customer order history
+  <img width="2459" height="1310" alt="image" src="https://github.com/user-attachments/assets/d71efbdb-3ccb-4722-abb4-e88c2b89dff6" />
 - Administrator product and inventory management
-- Administrator analytics dashboard
+<img width="2484" height="1097" alt="image" src="https://github.com/user-attachments/assets/8030d84f-5d4d-4cb4-8bd3-17a8002a2d1f" />
+<img width="2482" height="1344" alt="image" src="https://github.com/user-attachments/assets/fdd96e33-3648-4e15-a868-c746d220ed40" />
+<img width="2543" height="1218" alt="image" src="https://github.com/user-attachments/assets/26e1086c-8ce4-4bd3-9a83-5665735fd91f" />
+
 
 ## Known Issues and Current Limitations
 
-- The repository is currently in the planning and setup stage.
-- The frontend and backend applications have been initialized, but customer-facing pages and REST API features remain incomplete.
-- Prisma is configured to connect to Supabase PostgreSQL, but no application database migration or seed data has been created.
-- Supabase Auth has been selected, but authentication UI, session handling, Express token verification, profiles, and authorization rules have not been implemented.
-- Checkout and Stripe webhooks have not been implemented.
-- Administrator features, automated tests, screenshots, and deployments are not yet available.
-- The final process for obtaining an independent code review must be confirmed with the instructor because the project is currently planned as an individual project.
+- Automated unit, integration, and end-to-end test coverage is still incomplete.
+- The application has not yet been deployed to a production environment.
+- Product image management currently supports only one image per product.
+- Some administrator pages may require additional responsive UI improvements for smaller screens.
+- Advanced features such as product reviews, wishlists, hardware compatibility checking, and analytics are not currently implemented.
 
-## Academic and AI-Assisted Development Transparency
+## Future Improvements
 
-AI tools may be used to support planning, debugging, test generation, documentation, and code review when permitted by course policy. All generated code must be reviewed, understood, tested, and explained by the developer. The developer remains responsible for technical decisions, correctness, security, and the final implementation.
+- Add unit, integration, and Playwright end-to-end tests.
+- Deploy the frontend and backend to production environments.
+- Support multiple product images and improved product image management.
+- Support rich-text description and specifications comparator.
+- Improve responsive design across customer and administrator pages.
+- Add advanced product filtering and PC hardware compatibility checking.
+- Add product reviews, wishlists, low-stock alerts, and administrator analytics.
+
