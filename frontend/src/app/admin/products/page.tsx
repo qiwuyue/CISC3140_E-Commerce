@@ -16,20 +16,39 @@ export default function AdminProductsPage() {
     const supabase = createClient();
 
     const [products, setProducts] = useState<Product[]>([]);
+    const [searchInput, setSearchInput] = useState("");
+    const [search, setSearch] = useState("");
+    const [status, setStatus] = useState("all");
+    const [page, setPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         async function fetchProducts() {
+            setLoading(true);
+
             const {
                 data: { session },
             } = await supabase.auth.getSession();
 
             if (!session) {
+                setLoading(false);
                 return;
             }
 
+            const params = new URLSearchParams({
+                page: String(page),
+                limit: "10",
+                status: status,
+            });
+
+            if (search) {
+                params.set("search", search);
+            }
+
             const response = await fetch(
-                `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/api/admin/products`,
+                `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/api/admin/products?${params.toString()}`,
                 {
                     headers: {
                         Authorization: `Bearer ${session.access_token}`,
@@ -38,17 +57,23 @@ export default function AdminProductsPage() {
             );
 
             if (!response.ok) {
+                setLoading(false);
                 return;
             }
 
             const result = await response.json();
 
             setProducts(result.data);
+
+            setTotalPages(
+                result.pagination.totalPages
+            );
+
             setLoading(false);
         }
 
         fetchProducts();
-    }, []);
+    }, [page, status, search]);
 
     if (loading) {
         return <p>Loading products...</p>;
@@ -74,7 +99,55 @@ export default function AdminProductsPage() {
                     Add Product
                 </Link>
             </div>
+            <div className="mb-6 flex items-center gap-3">
+                <form
+                    onSubmit={(e) => {
+                        e.preventDefault();
 
+                        setPage(1);
+                        setSearch(searchInput.trim());
+                    }}
+                    className="flex w-full max-w-md"
+                >
+                    <input
+                        type="search"
+                        placeholder="Search by name or SKU..."
+                        value={searchInput}
+                        onChange={(e) =>
+                            setSearchInput(e.target.value)
+                        }
+                        className="w-full rounded-l-lg border px-4 py-2"
+                    />
+
+                    <button
+                        type="submit"
+                        className="rounded-r-lg bg-black px-5 py-2 text-white"
+                    >
+                        Search
+                    </button>
+                </form>
+
+                <select
+                    value={status}
+                    onChange={(e) => {
+                        setStatus(e.target.value);
+                        setPage(1);
+                    }}
+                    className="rounded-lg border bg-white px-4 py-2"
+                >
+                    <option value="all">
+                        All Status
+                    </option>
+
+                    <option value="active">
+                        Active
+                    </option>
+
+                    <option value="inactive">
+                        Inactive
+                    </option>
+                </select>
+            </div>
             <div className="overflow-hidden rounded-xl border">
                 <table className="w-full text-left">
                     <thead className="bg-gray-50">
@@ -126,6 +199,33 @@ export default function AdminProductsPage() {
                         ))}
                     </tbody>
                 </table>
+                <div className="mt-6 flex items-center justify-between">
+                    <button
+                        type="button"
+                        disabled={page <= 1}
+                        onClick={() =>
+                            setPage((prev) => prev - 1)
+                        }
+                        className="rounded-lg border px-4 py-2 disabled:opacity-40"
+                    >
+                        Previous
+                    </button>
+
+                    <span className="text-sm text-gray-500">
+                        Page {page} of {totalPages}
+                    </span>
+
+                    <button
+                        type="button"
+                        disabled={page >= totalPages}
+                        onClick={() =>
+                            setPage((prev) => prev + 1)
+                        }
+                        className="rounded-lg border px-4 py-2 disabled:opacity-40"
+                    >
+                        Next
+                    </button>
+                </div>
             </div>
         </main>
     );

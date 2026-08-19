@@ -1,148 +1,208 @@
 import type { Request, Response, NextFunction } from "express";
 import { prisma } from "../lib/prisma.js";
-import { createProductSchema,updateProductSchema } from "@ecommerce/shared";
+import { createProductSchema, updateProductSchema } from "@ecommerce/shared";
 import { randomUUID } from "node:crypto";
 import { supabase, supabaseAdmin } from "../lib/supabase.js";
 export async function getAdminProducts(
-    req: Request,
-    res: Response,
-    next: NextFunction
+  req: Request,
+  res: Response,
+  next: NextFunction
 ) {
-    try {
-        const products = await prisma.product.findMany({
-            orderBy: {
-                CreateAt: "desc",
-            },
-        });
+  try {
+    const search =
+      typeof req.query.search === "string"
+        ? req.query.search.trim()
+        : "";
 
-        return res.status(200).json({
-            data: products,
-        });
-    } catch (error) {
-        next(error);
-    }
+    const status =
+      typeof req.query.status === "string"
+        ? req.query.status
+        : "all";
+
+    const page = Math.max(Number(req.query.page) || 1, 1);
+
+    const limit = Math.min(
+      Math.max(Number(req.query.limit) || 10, 1),
+      50
+    );
+
+    const skip = (page - 1) * limit;
+
+    const where = {
+      ...(search && {
+        OR: [
+          {
+            name: {
+              contains: search,
+              mode: "insensitive" as const,
+            },
+          },
+          {
+            sku: {
+              contains: search,
+              mode: "insensitive" as const,
+            },
+          },
+        ],
+      }),
+
+      ...(status === "active" && {
+        isActive: true,
+      }),
+
+      ...(status === "inactive" && {
+        isActive: false,
+      }),
+    };
+    const [products, total] = await Promise.all([
+      prisma.product.findMany({
+        where,
+        orderBy: {
+          CreateAt: "desc",
+        },
+        skip,
+        take: limit,
+      }),
+
+      prisma.product.count({
+        where,
+      }),
+    ]);
+
+    return res.status(200).json({
+      data: products,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+      }
+    })
+  } catch (error) {
+    next(error);
+  }
 }
 export async function createProduct(
-    req: Request,
-    res: Response,
-    next: NextFunction
+  req: Request,
+  res: Response,
+  next: NextFunction
 ) {
-    try {
-        const validation =
-            createProductSchema.safeParse(req.body);
+  try {
+    const validation =
+      createProductSchema.safeParse(req.body);
 
-        if (!validation.success) {
-            return res.status(400).json({
-                error: "Invalid product data",
-                issues: validation.error.issues,
-            });
-        }
-
-        const data = validation.data;
-
-        const existingProduct =
-            await prisma.product.findUnique({
-                where: {
-                    sku: data.sku,
-                },
-            });
-
-        if (existingProduct) {
-            return res.status(409).json({
-                error: "SKU already exists",
-            });
-        }
-        //auto generate slug based on product name
-        function createSlug(name: string) {
-            return name
-                .toLowerCase()
-                .trim()
-                .replace(/[^a-z0-9]+/g, "-")
-                .replace(/^-|-$/g, "");
-        }
-        //avoid same product name with dupilicated slug
-        async function createUniqueSlug(name: string) {
-        const baseSlug = createSlug(name);
-
-        let slug = baseSlug;
-        let count = 2;
-
-        while (
-            await prisma.product.findUnique({
-            where: { slug },
-            })
-        ) {
-            slug = `${baseSlug}-${count}`;
-            count++;
-        }
-
-        return slug;
-        }
-        const slug = await createUniqueSlug(data.name);
-        const product = await prisma.product.create({
-            data: {
-                name: data.name,
-                slug: slug,
-                description: data.description,
-                category: { connect: { id: data.categoryId, } },
-
-                brand: {
-                    connect: {
-                        id: data.brandId,
-                    },
-                },
-
-                sku: data.sku,
-                price: data.price,
-                quantity: data.quantity,
-                isActive: data.isActive,
-            },
-        });
-
-        return res.status(201).json({
-            data: product,
-        });
-    } catch (error) {
-        next(error);
+    if (!validation.success) {
+      return res.status(400).json({
+        error: "Invalid product data",
+        issues: validation.error.issues,
+      });
     }
+
+    const data = validation.data;
+
+    const existingProduct =
+      await prisma.product.findUnique({
+        where: {
+          sku: data.sku,
+        },
+      });
+
+    if (existingProduct) {
+      return res.status(409).json({
+        error: "SKU already exists",
+      });
+    }
+    //auto generate slug based on product name
+    function createSlug(name: string) {
+      return name
+        .toLowerCase()
+        .trim()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-|-$/g, "");
+    }
+    //avoid same product name with dupilicated slug
+    async function createUniqueSlug(name: string) {
+      const baseSlug = createSlug(name);
+
+      let slug = baseSlug;
+      let count = 2;
+
+      while (
+        await prisma.product.findUnique({
+          where: { slug },
+        })
+      ) {
+        slug = `${baseSlug}-${count}`;
+        count++;
+      }
+
+      return slug;
+    }
+    const slug = await createUniqueSlug(data.name);
+    const product = await prisma.product.create({
+      data: {
+        name: data.name,
+        slug: slug,
+        description: data.description,
+        category: { connect: { id: data.categoryId, } },
+
+        brand: {
+          connect: {
+            id: data.brandId,
+          },
+        },
+
+        sku: data.sku,
+        price: data.price,
+        quantity: data.quantity,
+        isActive: data.isActive,
+      },
+    });
+
+    return res.status(201).json({
+      data: product,
+    });
+  } catch (error) {
+    next(error);
+  }
 }
 export async function getProductOptions(
-    req: Request,
-    res: Response,
-    next: NextFunction
+  req: Request,
+  res: Response,
+  next: NextFunction
 ) {
-    try {
-        const [categories, brands] = await Promise.all([
-            prisma.category.findMany({
-                select: {
-                    id: true,
-                    name: true,
-                },
-                orderBy: {
-                    name: "asc",
-                },
-            }),
+  try {
+    const [categories, brands] = await Promise.all([
+      prisma.category.findMany({
+        select: {
+          id: true,
+          name: true,
+        },
+        orderBy: {
+          name: "asc",
+        },
+      }),
 
-            prisma.brand.findMany({
-                select: {
-                    id: true,
-                    name: true,
-                },
-                orderBy: {
-                    name: "asc",
-                },
-            }),
-        ]);
+      prisma.brand.findMany({
+        select: {
+          id: true,
+          name: true,
+        },
+        orderBy: {
+          name: "asc",
+        },
+      }),
+    ]);
 
-        return res.status(200).json({
-            data: {
-                categories,
-                brands,
-            },
-        });
-    } catch (error) {
-        next(error);
-    }
+    return res.status(200).json({
+      data: {
+        categories,
+        brands,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
 }
 export async function getAdminProduct(
   req: Request<{ id: string }>,
@@ -261,13 +321,13 @@ export async function updateProduct(
   }
 }
 export async function uploadProductImage(
-  req: Request<{id:string}>,
+  req: Request<{ id: string }>,
   res: Response
 ) {
   try {
-    
+
     const productId = req.params.id;
-    
+
 
     if (!req.file) {
       return res.status(400).json({
