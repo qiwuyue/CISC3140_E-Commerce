@@ -47,7 +47,7 @@ export async function getProducts(
     const queryString = parameters.toString();
 
     const url =
-      `${process.env.BACKEND_API_URL}/api/products` +
+      `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/api/products` +
       (queryString ? `?${queryString}` : "");
 
     const response = await fetch(url, {
@@ -70,7 +70,7 @@ export async function getProduct(
   slug: string,
 ): Promise<Product | null> {
   const response = await fetch(
-    `${process.env.BACKEND_API_URL}/api/products/${encodeURIComponent(slug)}`,
+    `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/api/products/${encodeURIComponent(slug)}`,
     {
       cache: "no-store",
     },
