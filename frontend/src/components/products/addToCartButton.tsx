@@ -55,7 +55,7 @@ export default function AddToCartButton({
             );
 
             if (!response.ok) {
-                toast.error("Failed to add item to cart");
+                toast.error("Failed to add item to cart, please check stocks");
                 return;
             }
 
