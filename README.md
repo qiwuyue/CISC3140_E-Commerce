@@ -657,10 +657,6 @@ The application uses PostgreSQL hosted by Supabase and Prisma ORM for database a
 
 ## Screenshots
 
-Screenshots will be added after the corresponding pages are implemented.
-
-Planned screenshots:
-
 - Home page
   <img width="2149" height="1348" alt="image" src="https://github.com/user-attachments/assets/916aa14a-31e4-4e81-b505-4af3bec2fcee" />
 - Product catalog and filters
