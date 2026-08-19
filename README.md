@@ -481,6 +481,7 @@ Generated a test secret key and configure a Stripe sandbox for local development
 
 ```bash
 cd backend
+npm install -g @stripe/cli
 stripe sandbox create --from-git
 cd ..
 ```
