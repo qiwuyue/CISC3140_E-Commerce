@@ -50,8 +50,9 @@ const initialForm: CheckoutInput = {
     shippingPhone: "",
 };
 
-
-
+const stripePromise = loadStripe(
+        process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
+    );
 export default function CheckoutPage() {
     const router = useRouter();
     const supabase = createClient();
@@ -70,9 +71,7 @@ export default function CheckoutPage() {
     const [placingOrder, setPlacingOrder] =
         useState(false);
 
-    const stripePromise = loadStripe(
-        process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
-    );
+
     const [clientSecret, setClientSecret] = useState<string | null>(null);
     const [orderId, setOrderId] = useState<string | null>(null);
 
