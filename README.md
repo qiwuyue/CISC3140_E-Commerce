@@ -317,12 +317,50 @@ chore: configure enviroment or files
 - Typed API client for product requests
 - Loading, empty, and error states
 
-#### Testing Plan
+#### Testing
 
-- Unit tests for product query validation
-- Supertest integration tests for product routes
-- Component tests for product cards and filters
+- Manually verified that products load correctly on the homepage
+- Tested product search using product names and keywords
+- Tested product sorting by price, name, and newest products
+- Verified that inactive products are not shown to customers
+- Opened product detail pages and verified product information, price, stock, and images
+- Tested pagination across multiple product pages
+- Verified loading, empty, and error states during product browsing
 
+### Vertical Slice 2: Shopping Cart
+
+#### Database Changes
+
+- Added `Cart` and `CartItem` models
+- Added relationships between users, products, carts, and cart items
+- Added quantity and product constraints
+
+#### API Routes
+
+- `GET /api/cart`
+- `POST /api/cart/items`
+- `PATCH /api/cart/items/:id`
+- `DELETE /api/cart/items/:id`
+
+#### Frontend Components and Services
+
+- Add-to-cart controls on product pages
+- Shopping cart page
+- Quantity increase and decrease controls
+- Remove-from-cart functionality
+- Cart API integration
+- Stock and quantity validation
+
+#### Testing
+
+- Manually added products to the cart from the product detail page
+- Verified that cart items persisted for the authenticated user
+- Tested increasing and decreasing item quantities
+- Verified that quantities could not exceed available stock
+- Tested removing products from the cart
+- Verified that inactive or unavailable products could not be added
+- Checked that cart totals updated correctly after quantity changes
+- Tested API responses for invalid quantities and insufficient stock
 
 ## Local Installation
 
