@@ -148,28 +148,109 @@ Supabase Auth answers **who the user is**. Express remains responsible for **wha
 ## Repository Structure
 
 ```text
-Marcocenter/
-├── frontend/                 # Next.js application
-│   ├── app/
-│   ├── components/
-│   ├── lib/
-│   └── package.json
-├── backend/                  # Separate Express application
-│   ├── prisma/
-│   │   ├── schema.prisma
-│   │   └── seed.ts
+CISC3140_E-Commerce/
+├── frontend/                         # Next.js frontend application
+│   ├── public/                       # Static assets
+│   │
 │   ├── src/
-│   │   ├── controllers/
-│   │   ├── middleware/
-│   │   ├── routes/
-│   │   ├── services/
-│   │   ├── validators/
-│   │   └── server.ts
-│   └── package.json
-├── docs/
-├── .github/
+│   │   ├── app/                      # Next.js App Router pages
+│   │   │   ├── account/              # Customer account and profile pages
+│   │   │   ├── admin/                # Administrator pages
+│   │   │   ├── auth/                 # Authentication-related routes
+│   │   │   ├── cart/                 # Shopping cart page
+│   │   │   ├── checkout/             # Checkout flow
+│   │   │   ├── login/                # Login page
+│   │   │   ├── products/             # Product catalog and product details
+│   │   │   ├── signup/               # Registration page
+│   │   │   ├── globals.css           # Global styles
+│   │   │   ├── layout.tsx            # Root application layout
+│   │   │   └── page.tsx              # Home page
+│   │   │
+│   │   ├── components/               # Reusable React components
+│   │   │   ├── account/
+│   │   │   ├── auth/
+│   │   │   ├── checkout/
+│   │   │   ├── image/
+│   │   │   ├── layout/
+│   │   │   └── products/
+│   │   │
+│   │   ├── lib/                      # Frontend utilities and API helpers
+│   │   │   ├── supabase/             # Supabase client utilities
+│   │   │   ├── product.ts            # Product API helpers
+│   │   │   ├── profile.ts            # Profile API helpers
+│   │   │   └── uploadImage.ts        # Product image upload helper
+│   │   │
+│   │   └── proxy.ts                  # Next.js request proxy/middleware logic
+│   │
+│   ├── types/                        # Generated/supporting TypeScript types
+│   ├── .env.example                  # Frontend environment variable template
+│   ├── next.config.ts                # Next.js configuration
+│   ├── package.json
+│   └── tsconfig.json
+│
+├── backend/                          # Express REST API
+│   ├── prisma/
+│   │   ├── migrations/               # Database migration history
+│   │   ├── schema.prisma             # Prisma database schema
+│   │   └── seed.ts                   # Development seed data
+│   │
+│   ├── src/
+│   │   ├── controllers/              # API request handlers and business logic
+│   │   │   ├── adminOrderController.ts
+│   │   │   ├── adminProductController.ts
+│   │   │   ├── authController.ts
+│   │   │   ├── cartController.ts
+│   │   │   ├── checkoutController.ts
+│   │   │   ├── orderController.ts
+│   │   │   ├── productController.ts
+│   │   │   ├── profileController.ts
+│   │   │   └── stripeWebhookController.ts
+│   │   │
+│   │   ├── lib/                      # External service and database clients
+│   │   │   ├── prisma.ts             # Prisma client
+│   │   │   ├── stripe.ts             # Stripe client
+│   │   │   └── supabase.ts           # Supabase server client
+│   │   │
+│   │   ├── middleware/               # Express middleware
+│   │   │   ├── requireAdmin.ts       # Administrator authorization
+│   │   │   ├── requireAuth.ts        # Authentication middleware
+│   │   │   └── upload.ts             # Image upload middleware
+│   │   │
+│   │   ├── routes/                   # REST API route definitions
+│   │   │   ├── adminRoutes.ts
+│   │   │   ├── authRoutes.ts
+│   │   │   ├── cartRoutes.ts
+│   │   │   ├── checkoutRoutes.ts
+│   │   │   ├── orderRoutes.ts
+│   │   │   ├── productRoutes.ts
+│   │   │   ├── profileRoutes.ts
+│   │   │   └── index.ts
+│   │   │
+│   │   ├── types/
+│   │   │   └── express.d.ts          # Custom Express TypeScript definitions
+│   │   │
+│   │   ├── app.ts                    # Express application configuration
+│   │   └── server.ts                 # Backend server entry point
+│   │
+│   ├── .env.example                  # Backend environment variable template
+│   ├── prisma.config.ts              # Prisma configuration
+│   ├── package.json
+│   └── tsconfig.json
+│
+├── packages/
+│   └── shared/                       # Shared validation schemas
+│       ├── src/
+│       │   ├── checkoutSchema.ts      # Checkout validation
+│       │   ├── productSchema.ts       # Product validation
+│       │   ├── profileSchema.ts       # Profile validation
+│       │   └── index.ts               # Shared package exports
+│       ├── package.json
+│       └── tsconfig.json
+│
+├── .gitignore
+├── package.json                      # Root scripts and shared workspace setup
+├── package-lock.json
 └── README.md
-```
 
 ## Project Management and Development Workflow
 
@@ -190,70 +271,42 @@ Development work is tracked in a GitHub Project rather than only in personal not
 ### Issue Workflow
 
 1. Create a GitHub Issue for each feature, bug, test, or documentation task.
-2. Add acceptance criteria and assign the appropriate priority, size, area, and iteration.
+2. Assign the appropriate priority, size, area, and iteration.
 3. Add the Issue to the GitHub Project and move it to **Todo** before development.
 4. Create a branch from the latest `main` branch and move the Issue to **In Progress**.
 5. Make focused, meaningful commits that reference the Issue when appropriate.
-6. Open a pull request and link it with `Closes #<issue-number>`.
+6. Open a pull request and link it with `Closes #<issue-number>` or move the Issue to **Done** in project board.
 7. Confirm that automated checks pass and complete the pull-request checklist.
 8. Request a code review. For an individual project, the instructor, teaching assistant, or an approved classmate will be asked to review milestone pull requests.
 9. Merge the approved pull request and move the linked Issue to **Done**.
 
-### Branch Naming
-
-```text
-setup/project-env
-feature/product-catalog
-feature/authentication
-feature/shopping-cart
-feature/checkout
-feature/admin-dashboard
-fix/<short-description>
-docs/<short-description>
-test/<short-description>
-```
 
 ### Commit Examples
 
 ```text
 docs: add initial project requirements
-feat(products): add product list endpoint
-feat(cart): persist cart items for authenticated users
-test(auth): add login integration tests
-fix(inventory): prevent checkout when stock is insufficient
+feat: add product list endpoint
+feat: persist cart items for authenticated users
+test: add login integration tests
+fix: prevent checkout when stock is insufficient
 chore: configure enviroment or files
 ```
 
-### Definition of Done
 
-A task may be moved to **Done** only when:
+## Vertical-Slice Example
 
-- Its acceptance criteria are satisfied
-- The implementation has been manually verified
-- Relevant tests have been added or updated
-- Existing tests pass
-- Loading, empty, validation, and error states are handled where applicable
-- No secrets or generated files are committed
-- Documentation is updated when behavior or setup changes
-- The pull request has been reviewed and merged
-
-## Vertical-Slice Examples
-
-The course requires at least two **completed** vertical slices. The sections below identify the first two planned slices, but they will not be marked complete until the database, API, frontend, and tests all work together.
-
-### Vertical Slice 1: Product Catalog — Planned
+### Vertical Slice 1: Product Catalog
 
 #### Database Changes
 
-- Add `categories`, `brands`, `products`, and `product_images` tables
-- Add product price, stock quantity, status, and searchable specification data
+- Add `categories`, `brands`, `products` tables
+- Add product price, stock quantity, status.
 - Add seed data for development and grading
 
 #### API Routes
 
 - `GET /api/products`
 - `GET /api/products/:id`
-- `GET /api/categories`
 
 #### Frontend Components and Services
 
@@ -269,38 +322,7 @@ The course requires at least two **completed** vertical slices. The sections bel
 - Unit tests for product query validation
 - Supertest integration tests for product routes
 - Component tests for product cards and filters
-- Playwright test for browsing from the catalog to a product page
 
-### Vertical Slice 2: Shopping Cart — Planned
-
-#### Database Changes
-
-- Add `carts` and `cart_items` tables
-- Add user, product, quantity, and uniqueness relationships
-
-#### API Routes
-
-- `GET /api/cart`
-- `POST /api/cart/items`
-- `PATCH /api/cart/items/:itemId`
-- `DELETE /api/cart/items/:itemId`
-
-#### Frontend Components and Services
-
-- Add-to-cart control
-- Cart page or cart drawer
-- Quantity controls and remove action
-- Cart API service and client-side synchronization
-- Price summary, loading, empty, and error states
-
-#### Testing Plan
-
-- Unit tests for quantity and stock validation
-- Supertest integration tests for authenticated cart routes
-- Component tests for quantity controls and totals
-- Playwright test for adding, updating, and removing a cart item
-
-After each slice is completed, this section will be updated with the exact migration names, implemented files, request and response behavior, test commands, and test results.
 
 ## Local Installation
 
@@ -473,7 +495,7 @@ By defalut, the frontend runs at:
 http://localhost:3000
 ```
 
-### 12. Run Tests
+### 12. Run Tests (Ignored, Incompleted feature)
 
 Backend tests:
 
@@ -534,106 +556,104 @@ NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=
 
 ## API Documentation
 
-The routes below are planned. Implemented request bodies, response bodies, authorization rules, validation rules, and status codes will be documented as development progresses.
+### Public APIs
+
+| Method | Endpoint | Description |
+|---|---|---|
+| `GET` | `/api/products` | Get products with search, sorting, and pagination |
+| `GET` | `/api/products/:slug` | Get product details by slug |
 
 ### Authentication
 
-Registration, login, logout, password recovery, and session refresh are handled by the frontend through Supabase Auth rather than custom Express password endpoints. Supabase passwords are not sent to or stored by the Express application.
+| Method | Endpoint | Description |
+|---|---|---|
+| `GET` | `/api/auth/me` | Verify the current authenticated user |
 
-Protected Express routes accept a Supabase access token in the following header:
+Protected routes require a Supabase access token:
 
-```http
+```text
 Authorization: Bearer <access-token>
 ```
 
-| Method | Route | Access | Description |
-| --- | --- | --- | --- |
-| `GET` | `/api/profile` | Authenticated | Returns the application profile associated with the verified Supabase user |
-| `PATCH` | `/api/profile` | Authenticated | Updates allowed fields on the current user's application profile |
+### Profile
 
-### Products and Categories
-
-| Method | Route | Access | Description |
-| --- | --- | --- | --- |
-| `GET` | `/api/products` | Public | Returns available products with search, filter, sort, and pagination options |
-| `GET` | `/api/products/:id` | Public | Returns one product and its details |
-| `GET` | `/api/categories` | Public | Returns product categories |
-| `GET` | `/api/brands` | Public | Returns product brands |
+| Method | Endpoint | Description |
+|---|---|---|
+| `POST` | `/api/profile/init` | Initialize user profile |
+| `GET` | `/api/profile` | Get current user profile |
+| `PATCH` | `/api/profile` | Update current user profile |
 
 ### Cart
 
-| Method | Route | Access | Description |
-| --- | --- | --- | --- |
-| `GET` | `/api/cart` | Authenticated | Returns the current user's cart |
-| `POST` | `/api/cart/items` | Authenticated | Adds a product to the cart |
-| `PATCH` | `/api/cart/items/:itemId` | Authenticated | Updates a cart item's quantity |
-| `DELETE` | `/api/cart/items/:itemId` | Authenticated | Removes an item from the cart |
+| Method | Endpoint | Description |
+|---|---|---|
+| `GET` | `/api/cart` | Get current user's cart |
+| `POST` | `/api/cart/items` | Add a product to the cart |
+| `PATCH` | `/api/cart/items/:id` | Update cart item quantity |
+| `DELETE` | `/api/cart/items/:id` | Remove an item from the cart |
 
-### Checkout and Orders
+### Checkout & Orders
 
-| Method | Route | Access | Description |
-| --- | --- | --- | --- |
-| `POST` | `/api/checkout/session` | Authenticated | Validates the cart and creates a Stripe Checkout Session |
-| `POST` | `/api/webhooks/stripe` | Stripe webhook | Verifies payment events and safely creates or updates an order |
-| `GET` | `/api/orders` | Authenticated | Returns the current user's order history |
-| `GET` | `/api/orders/:id` | Owner or admin | Returns one order and its items |
+| Method | Endpoint | Description |
+|---|---|---|
+| `POST` | `/api/checkout` | Create an order and Stripe PaymentIntent |
+| `GET` | `/api/orders` | Get current user's order history |
+| `GET` | `/api/orders/:id` | Get order details |
 
-### Reviews and Wishlist
+### Admin Products
 
-| Method | Route | Access | Description |
-| --- | --- | --- | --- |
-| `POST` | `/api/products/:productId/reviews` | Authenticated purchaser | Creates a product review |
-| `PATCH` | `/api/reviews/:id` | Review owner | Updates a product review |
-| `DELETE` | `/api/reviews/:id` | Review owner or admin | Deletes a product review |
-| `GET` | `/api/wishlist` | Authenticated | Returns the current user's wishlist |
-| `POST` | `/api/wishlist/:productId` | Authenticated | Adds a product to the wishlist |
-| `DELETE` | `/api/wishlist/:productId` | Authenticated | Removes a product from the wishlist |
+Admin routes require an authenticated user with the `ADMIN` role.
 
-### Administrator
+| Method | Endpoint | Description |
+|---|---|---|
+| `GET` | `/api/admin/check` | Verify admin access |
+| `GET` | `/api/admin/products` | Get products for admin management |
+| `GET` | `/api/admin/products/:id` | Get a product by ID |
+| `GET` | `/api/admin/product-options` | Get available categories and brands |
+| `POST` | `/api/admin/products` | Create a product |
+| `PATCH` | `/api/admin/products/:id` | Update a product |
+| `POST` | `/api/admin/products/:id/image` | Upload a product image |
 
-| Method | Route | Access | Description |
-| --- | --- | --- | --- |
-| `POST` | `/api/admin/products` | Admin | Creates a product |
-| `PATCH` | `/api/admin/products/:id` | Admin | Updates a product |
-| `DELETE` | `/api/admin/products/:id` | Admin | Deactivates or deletes a product |
-| `PATCH` | `/api/admin/inventory/:productId` | Admin | Adjusts product inventory |
-| `GET` | `/api/admin/orders` | Admin | Returns customer orders |
-| `PATCH` | `/api/admin/orders/:id/status` | Admin | Updates an order's fulfillment status |
-| `GET` | `/api/admin/analytics` | Admin | Returns dashboard analytics |
+### Admin Orders
+
+| Method | Endpoint | Description |
+|---|---|---|
+| `GET` | `/api/admin/orders` | Get customer orders |
+| `GET` | `/api/admin/orders/:id` | Get order details |
+| `PATCH` | `/api/admin/orders/:id/status` | Update order status |
+
+### Stripe Webhook
+
+| Method | Endpoint | Description |
+|---|---|---|
+| `POST` | `/api/webhooks/stripe` | Handle Stripe payment events |
+
+The webhook currently handles successful and failed Stripe PaymentIntent events and updates order, payment, cart, and inventory data accordingly.
 
 ## Database Design
 
-The planned relational database uses PostgreSQL. Important monetary values will be stored using a fixed-precision decimal type or integer cents rather than floating-point numbers.
+The application uses PostgreSQL hosted by Supabase and Prisma ORM for database access.
 
-| Table | Purpose and Important Relationships |
-| --- | --- |
-| Supabase `auth.users` | Managed exclusively by Supabase Auth; stores authentication identity and credentials and is not modified through Prisma |
-| `profiles` | Stores application profile data and customer/admin role; uses the Supabase Auth user UUID as its identity and has one cart and many orders, reviews, and wishlist items |
-| `categories` | Organizes products; one category has many products |
-| `brands` | Stores product manufacturers; one brand has many products |
-| `products` | Stores product name, description, price, status, stock, and category/brand references |
-| `product_images` | Stores product image metadata; many images belong to one product |
-| `product_specifications` | Stores category-specific technical specifications used for product details and filtering |
-| `carts` | Stores one active cart for a user |
-| `cart_items` | Connects carts and products and stores quantity; each product may appear only once per cart |
-| `orders` | Stores order owner, totals, payment status, fulfillment status, and Stripe references |
-| `order_items` | Stores immutable snapshots of product name, unit price, and quantity at purchase time |
-| `reviews` | Connects verified customers and products with a rating and comment |
-| `wishlist_items` | Connects profiles and saved products |
-| `inventory_logs` | Records stock changes, reasons, timestamps, and the responsible administrator profile |
-| `admin_logs` | Records important administrator actions for accountability |
+| Table | Purpose |
+|---|---|
+| Supabase `auth.users` | Stores authentication identities and credentials managed by Supabase Auth |
+| `profiles` | Stores customer profile information and user roles |
+| `categories` | Stores product categories |
+| `brands` | Stores product manufacturers |
+| `products` | Stores product details, price, stock, image, category, and brand |
+| `Cart` | Stores one shopping cart for each user |
+| `CartItem` | Stores products and quantities inside a cart |
+| `orders` | Stores customer orders, shipping information, totals, payment status, and Stripe PaymentIntent references |
+| `order_items` | Stores product snapshots and quantities for each order |
 
-Key relationship rules:
+### Relationships
 
 - A product belongs to one category and one brand.
-- A Supabase Auth user is represented in the application by a corresponding `profiles` record in the PostgreSQL `public` schema.
-- Passwords and authentication credentials remain managed by Supabase Auth and are never stored in Prisma-managed tables.
-- A profile owns one active cart, and a cart contains many cart items.
-- A profile can place many orders, and an order contains many order items.
-- `order_items` preserve the product name and price at checkout so historical orders do not change when a product is renamed or repriced.
-- Inventory changes are performed and recorded by the backend rather than trusted from frontend values.
-
-A complete entity-relationship diagram will be added after the first Prisma schema is finalized.
+- A profile has one cart and can have many orders.
+- A cart contains many cart items.
+- An order contains many order items.
+- Product prices and order totals use PostgreSQL `DECIMAL(10,2)` values.
+- Authentication credentials are managed by Supabase Auth and are not stored in Prisma-managed tables.
 
 ## Screenshots
 
